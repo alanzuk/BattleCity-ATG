@@ -10,4 +10,5 @@
 <fullyQualifiedTypeName name="java.awt.GridBagLayout"/>
 <fullyQualifiedTypeName name="java.util.Timer"/>
 <fullyQualifiedTypeName name="javax.swing.Timer"/>
+<fullyQualifiedTypeName name="Proyectil.DisparoEnemigo"/>
 </qualifiedTypeNameHistroy>

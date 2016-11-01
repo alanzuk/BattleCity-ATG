@@ -44,7 +44,7 @@ public class Jugador extends Tanque {
 	public Proyectil disparar() {
 		float x_disp=x;
 		float y_disp=y;
-	
+		nivel.disparar();
 		switch(direccion){
 				case (1):{
 					x_disp=x+((tamanio_celda/100)/2);
@@ -66,8 +66,9 @@ public class Jugador extends Tanque {
 				}
 			}	
 		
-	
+	if(nivel.getSimultaneo()>=0)
 		disparo=new DisparoJugador(direccion,x_disp,y_disp,(int)nivel.getVelocidadDisp());
+		
 		return disparo;
 	}
 	
@@ -155,5 +156,10 @@ public class Jugador extends Tanque {
 		return new VisitanteConcreto();
 	}
 	
-	
+	public int getSimultaneo(){
+		return nivel.getSimultaneo();
+	}
+	public void setSimultaneo(){
+		nivel.setDisparo();
+	}
 }

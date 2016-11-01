@@ -1,6 +1,8 @@
 package Tanque;
 
 import General.GameObject;
+import Proyectil.DisparoEnemigo;
+import Proyectil.DisparoJugador;
 import Proyectil.Proyectil;
 import Visitor.Visitante;
 import Visitor.VisitanteConcretoEnemigo;
@@ -8,12 +10,42 @@ import Visitor.VisitanteConcretoEnemigo;
 public abstract class Enemigo extends Tanque {
 	protected int recompensa;
 	protected Visitante visitante=new VisitanteConcretoEnemigo();
+	protected int simultaneo=1;
 	
 	public int getRecompensa(){
 		return recompensa;
 	}
+	public Proyectil disparar(){
+	float x_disp=x;
+	float y_disp=y;
+	//simultaneo--;
+	switch(direccion){
+			case (1):{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+			case 2:{
+				x_disp=x+((tamanio_celda/100)/2);
+				y_disp=y-(tamanio_celda/100);
+				break;
+			}
+			case 3:{
+				y_disp=y+((tamanio_celda/100)/2);
+				x_disp=x+(tamanio_celda/100);
+				break; 
+			}
+			case 4:{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+		}	
 	
-	public abstract Proyectil disparar();
+DisparoEnemigo disparo=null;
+//if(simultaneo>=0)
+	 disparo=new DisparoEnemigo(direccion,(int)x_disp,(int)y_disp,(int)this.velocidadDisp);
+	
+	return disparo;
+}
 	
 	public int morir(){
 		path="";
@@ -64,5 +96,12 @@ public abstract class Enemigo extends Tanque {
 			direccion++;
 		
 		
+	}
+
+	public int getSimultaneo() {
+		return simultaneo;
+	}
+	public void setSimultaneo(){
+		simultaneo++;
 	}
 }

@@ -160,8 +160,10 @@ public class GUI implements KeyListener,Runnable  {
 			break;
 			}
 		case(KeyEvent.VK_F):{
+			if(Juego.getSimultaneoJugador()>=0){
 			Juego.getProyectiles().addLast(disparar());
 			playDisparo();
+			}
 			break;
 		} 
 		case(KeyEvent.VK_T):{

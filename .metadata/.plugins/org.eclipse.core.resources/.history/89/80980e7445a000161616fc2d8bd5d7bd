@@ -1,0 +1,107 @@
+package Tanque;
+
+import General.GameObject;
+import Proyectil.DisparoEnemigo;
+import Proyectil.DisparoJugador;
+import Proyectil.Proyectil;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoEnemigo;
+
+public abstract class Enemigo extends Tanque {
+	protected int recompensa;
+	protected Visitante visitante=new VisitanteConcretoEnemigo();
+	protected int simultaneo=1;
+	
+	public int getRecompensa(){
+		return recompensa;
+	}
+	public Proyectil disparar(){
+	float x_disp=x;
+	float y_disp=y;
+	simultaneo--;
+	switch(direccion){
+			case (1):{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+			case 2:{
+				x_disp=x+((tamanio_celda/100)/2);
+				y_disp=y-(tamanio_celda/100);
+				break;
+			}
+			case 3:{
+				y_disp=y+((tamanio_celda/100)/2);
+				x_disp=x+(tamanio_celda/100);
+				break; 
+			}
+			case 4:{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+		}	
+	
+DisparoEnemigo disparo=null;
+if(simultaneo>=0)
+	 disparo=new DisparoEnemigo(direccion,(int)x_disp,(int)y_disp,(int)this.velocidadDisp);
+	
+	return disparo;
+}
+	
+	public int morir(){
+		path="";
+		path_dinamico="";
+		refrescarPosicion();
+		return recompensa;
+	}
+
+	public void afectar(Visitante v){
+		v.visit(this);
+	}
+	
+	public boolean colision(GameObject obj1, GameObject obj2){
+		
+		boolean b=false;
+		 if(obj1.getAvanzable() && obj2.getAvanzable()){
+			 obj1.afectar(new VisitanteConcretoEnemigo());
+		     b=true;
+		 }
+	      else	{
+			 	b=!(this.getRectangulo().intersects(obj1.getRectangulo()) 
+			 			&& this.getRectangulo().intersects(obj2.getRectangulo())) ;
+			 	
+			 	if (this.getRectangulo().intersects(obj1.getRectangulo())){
+			 			obj1.afectar(new VisitanteConcretoEnemigo());
+			 			this.afectar(obj1.getVisitante());
+			 	}
+			 	
+			 	if (this.getRectangulo().intersects(obj2.getRectangulo())){
+			 			obj2.afectar(new VisitanteConcretoEnemigo());
+			 			this.afectar(obj2.getVisitante());
+			 	}
+			 
+			 
+		 }
+		
+		return b;
+	}
+	
+	public Visitante getVisitante(){
+		return visitante;
+	}
+
+	public void marchaAtraz() {
+		if(direccion % 2 ==0)
+			direccion--;
+		else
+			direccion++;
+		
+		
+	}
+
+	public int getSimultaneo() {
+		return simultaneo;
+	}
+	public void setSimultaneo(){
+		simultaneo++;
+	}
+}
