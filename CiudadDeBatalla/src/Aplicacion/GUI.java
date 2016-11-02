@@ -1,19 +1,10 @@
 package Aplicacion;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Color;
 
@@ -21,29 +12,28 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 
 import General.GameObject;
 import General.Logica;
+import Poderes.Casco;
+import Poderes.Powerup;
 import Proyectil.Proyectil;
 import Tanque.Enemigo;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
+
 import javax.swing.SwingConstants;
 
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.Image;
-
 
 public class GUI implements KeyListener,Runnable  {
 	
 	private static Logica Juego;
 	private JFrame ventana;
-	private JPanel frame;
+	private static JPanel frame;
 	private static int tamanio_celda=32;
 	private static JLabel lblPuntos=new JLabel("Puntos : ");
 	private static JLabel explosion=new JLabel();		
@@ -161,24 +151,50 @@ public class GUI implements KeyListener,Runnable  {
 			}
 		case(KeyEvent.VK_F):{
 			if(Juego.getSimultaneoJugador()>=0){
-			Juego.getProyectiles().addLast(disparar());
-			playDisparo();
+				Proyectil p=Juego.getJugador().disparar();
+				agregarDisparo(p);
+				Juego.getProyectiles().addLast(p);
+				playDisparo();
 			}
 			break;
 		} 
 		case(KeyEvent.VK_T):{
 			Juego.terminar();
+			break;
 		} 
+		case(KeyEvent.VK_1):{
+			frame.add(Juego.PonerCasco());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_2):{
+			frame.add(Juego.PonerEstrella());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_3):{
+			frame.add(Juego.PonerVida());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_4):{
+			frame.add(Juego.PonerReloj());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_5):{
+			frame.add(Juego.PonerPala());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_6):{
+			frame.add(Juego.PonerGranada());
+			frame.repaint();
+		}
 		}
 		refreshGUI();
 	}
 
 	
-	private Proyectil disparar() {
-		Proyectil p = Juego.getJugador().disparar();
+	public static void agregarDisparo(Proyectil p) {
 		frame.add(p.getGrafico());
-		return p;
 	}
+	
 
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -188,7 +204,6 @@ public class GUI implements KeyListener,Runnable  {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	public static synchronized void mostrarImpacto(float x,float y) {

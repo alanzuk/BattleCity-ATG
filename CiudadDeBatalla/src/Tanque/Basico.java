@@ -14,10 +14,6 @@ public class Basico extends Enemigo {
 		 aguante=1;
 	}
 	
-	public Proyectil disparar() {
-		return null;
-	}
-	
 	public void afectar(Visitante v){
 		v.visit(this);
 		

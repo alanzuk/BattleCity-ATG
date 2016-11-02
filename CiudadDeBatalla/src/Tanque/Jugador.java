@@ -13,7 +13,6 @@ public class Jugador extends Tanque {
 	private Nivel nivel;
 	private DisparoJugador disparo;
 
-	
 	public Jugador(int x, int y){
 		this.x=x;
 		this.y=y;
@@ -67,7 +66,7 @@ public class Jugador extends Tanque {
 			}	
 		
 	if(nivel.getSimultaneo()>=0)
-		disparo=new DisparoJugador(direccion,x_disp,y_disp,(int)nivel.getVelocidadDisp());
+		disparo=new DisparoJugador(direccion,x_disp,y_disp,(int)nivel.getVelocidadDisp(),this);
 		
 		return disparo;
 	}
@@ -90,6 +89,7 @@ public class Jugador extends Tanque {
 	}
 	
 	public void mover(int i){
+		
 		if(direccion==i){
 			switch(i){
 				case 1:{
@@ -159,6 +159,7 @@ public class Jugador extends Tanque {
 	public int getSimultaneo(){
 		return nivel.getSimultaneo();
 	}
+	
 	public void setSimultaneo(){
 		nivel.setDisparo();
 	}

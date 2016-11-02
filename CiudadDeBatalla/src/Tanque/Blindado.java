@@ -23,15 +23,12 @@ public class Blindado extends Enemigo{
 		//Inicializo el JLabel
 		path=ruta;
 		path_dinamico=""+direccion;
+		simultaneo=1;
 		grafico=new JLabel();
 		refrescarPosicion();
 		recompensa=400;
 		rectangulo= new Rectangle(x,y,tamanio_celda,tamanio_celda);
 		vida=1;
-	}
-	
-	public Proyectil disparar() {
-		return null;
 	}
 	
 	public boolean getAvanzable(){
@@ -42,13 +39,12 @@ public class Blindado extends Enemigo{
 		return rectangulo;
 	}
 	
-	public float getVelocidadMov(){
-		return velocidadMov/10;
+	public float getVelocidadDisp(){
+		return velocidadDisp / 10;
 	}
 	
-	public void afectar(Visitante v){
-		v.visit(this);
-		
+	public float getVelocidadMov(){
+		return velocidadMov/10;
 	}
 	
 }

@@ -57,7 +57,7 @@ public class VisitanteConcretoProyectil implements Visitante {
 
 	@Override
 	public void visit(Jugador j) {
-		j.plomo();	
+		
 	}
 
 	@Override

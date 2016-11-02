@@ -5,11 +5,13 @@ import java.util.*;
 
 import Aplicacion.GUI;
 
+import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.RoundingMode;
+
 import Obstaculo.Agua;
 import Obstaculo.Aguila;
 import Obstaculo.Cemento;
@@ -17,7 +19,7 @@ import Obstaculo.Ladrillo;
 import Obstaculo.Limite;
 import Obstaculo.Obstaculo;
 import Obstaculo.Vacio;
-import Poderes.Powerup;
+import Poderes.*;
 import Proyectil.Proyectil;
 import Tanque.Blindado;
 import Tanque.Enemigo;
@@ -35,7 +37,7 @@ public class Logica implements Runnable{
 	protected GameObject[][] mapa;
 	protected Powerup[] miPowerup;
 	protected int puntos;
-	protected volatile boolean seguir=true;
+	protected volatile static boolean seguir=true;
 
 	public Logica(){
 		
@@ -130,12 +132,16 @@ public class Logica implements Runnable{
 		
 	}
 	
+	
 	public void run(){
 	 while(seguir){
 		 try{
 			 //SONIDO MOTOR TANQUE
 				// GUI.playMotor();
 
+		
+			 
+			 
 			 Iterator<Proyectil> itProyectil=misProyectiles.iterator();
 			 Proyectil p;
 			 while(itProyectil.hasNext()){
@@ -148,6 +154,13 @@ public class Logica implements Runnable{
 						p.afectar(e.getVisitante());
 				 		e.afectar(p.getVisitante());
 					}
+					
+					if(cuentaInter(miJugador,p)){
+						p.afectar(miJugador.getVisitante());
+						miJugador.afectar(p.getVisitante());
+					}
+					
+					
 				 }
 				 
 				 if(p.getVida()>0){
@@ -157,6 +170,8 @@ public class Logica implements Runnable{
 				 }
 				 else{
 					 if(p.getVida()==0){//Si la vida es igual a 0 entonces debo eliminar algo 
+						p.getTanqueDisparador().setSimultaneo();
+						System.out.println(" El path "+p.getTanqueDisparador().getSimultaneo());
 						eliminarProyectil(p);
 					 	itProyectil.remove();
 					 	//ELIMINO OBSTACULOS 
@@ -184,18 +199,21 @@ public class Logica implements Runnable{
 				}// Else
 			}// fin for each de proyectil
 			 
+
 			 
 			 for(Enemigo e:misEnemigos){
 				 Random rnd= new Random();
-				 
 				
 				 if(caminoLibre(e)){
-					 e.mover(e.getDireccion());
-					 if(e.getSimultaneo()>=0){
-						Proyectil pe=e.disparar();
-						if(pe!=null)
-							 misProyectiles.add(pe);
+					 if(e.getSimultaneo()==1){
+							Proyectil pe=e.disparar();
+							if(pe!=null){
+								 misProyectiles.addLast(pe);
+								 GUI.agregarDisparo(pe);
+							
+							}
 					 }
+						 e.mover(e.getDireccion());
 				 }
 				 else{
 			    	 int nuevaDireccion= rnd.nextInt(4)+1;
@@ -207,9 +225,6 @@ public class Logica implements Runnable{
 			 }
 			
 			 
-			 
-			 
-			 
 	    	 Thread.sleep(75);
 
 		
@@ -219,7 +234,7 @@ public class Logica implements Runnable{
 	 catch(ConcurrentModificationException e1){}
 	}
 }
-	public void terminar(){
+	public static void terminar(){
 		seguir=false;
 	}
 	
@@ -245,7 +260,7 @@ public class Logica implements Runnable{
 		return seChocan;
 	}
 	
-	public boolean choqueEnemigo(Movible v,float x ,float y){
+	public boolean choqueEnemigo(Tanque v,float x ,float y){
 		
 		for(Enemigo e:misEnemigos){
 			if(e!=v){
@@ -269,6 +284,7 @@ public class Logica implements Runnable{
 		return false;
 	}
 	
+	
 	private boolean caminoLibre(Movible t) {
 		
 		int i=t.getDireccion();
@@ -281,8 +297,7 @@ public class Logica implements Runnable{
 		switch(i){
 			case 1:{
 				y-=0.2;
-				if(choqueEnemigo(t,x,y))
-					return false;
+				
 				
 				xI=redondeoAbajo(x);
 				yI=redondeoAbajo(y);
@@ -296,8 +311,6 @@ public class Logica implements Runnable{
 			}
 			case 2:{
 				y+=0.2;
-				if(choqueEnemigo(t,x,y))
-					return false;
 				xI=redondeoAbajo(x);
 				yI=redondeoArriba(y);
 			    		t.refrescarPosicion();	
@@ -311,8 +324,6 @@ public class Logica implements Runnable{
 			}
 			case 3:{
 				x+=0.2;
-				if(choqueEnemigo(t,x,y))
-					return false;
 				xI=redondeoArriba(x);
 				yI=redondeoAbajo(y);
 							t.refrescarPosicion();				 
@@ -327,8 +338,6 @@ public class Logica implements Runnable{
 			}
 			case 4:{
 				x-=0.2;
-				if(choqueEnemigo(t,x,y))
-					return false;
 				xI=redondeoAbajo(x);
 				yI=redondeoArriba(y);
 						t.refrescarPosicion();				 
@@ -368,10 +377,12 @@ public class Logica implements Runnable{
 	public Enemigo addEnemigo()  {
 			misEnemigos.addLast(new Blindado(0,0));
 			return misEnemigos.getLast();
-		}
+	}
+	
 	public int getSimultaneoJugador(){
 		return miJugador.getSimultaneo();
 	}
+	
 	public void eliminarEnemigo(Enemigo g){
 		//Si es un Enemigo
 		for(Enemigo e : misEnemigos){
@@ -388,11 +399,9 @@ public class Logica implements Runnable{
 	}
 	
 	public void eliminarProyectil(Proyectil g){
-		
 		//Si es Proyectil
 		for(Proyectil e : misProyectiles){
 			if(e==g){
-				g.morir();
 				if(!misProyectiles.isEmpty()){
 					g.morir();
 					g=null;	
@@ -400,7 +409,6 @@ public class Logica implements Runnable{
 				}
 			}
 		}
-		miJugador.setSimultaneo();
 	}
 	
 	public void eliminarObstaculo(Obstaculo g){
@@ -435,7 +443,31 @@ public class Logica implements Runnable{
     public void subirNivel(){
     		miJugador.subirNivel();
     }
+
+
+	public Component PonerCasco() {
+		Powerup c=new Casco(7,12);
+		return c.getGrafico();
+	}
     
-    
-    
+	public Component PonerReloj() {
+		Powerup c=new Reloj(7,12);
+		return c.getGrafico();
+	}
+	public Component PonerGranada() {
+		Powerup c=new Granada(7,12);
+		return c.getGrafico();
+	}
+	public Component PonerEstrella() {
+		Powerup c=new Estrella(7,12);
+		return c.getGrafico();
+	}
+	public Component PonerVida() {
+		Powerup c=new Vida(7,12);
+		return c.getGrafico();
+	}
+	public Component PonerPala() {
+		Powerup c=new Pala(7,12);
+		return c.getGrafico();
+	}
 }

@@ -1,20 +1,19 @@
 package Proyectil;
 
 import java.io.File;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-
 import General.GameObject;
+import Tanque.Tanque;
 import Visitor.Visitante;
 import Visitor.VisitanteConcretoProyectil;
 
 public class DisparoJugador extends Proyectil {
 	protected Visitante visitante=new VisitanteConcretoProyectil();
 
-	public DisparoJugador(int dir,float x,float y,int v) {
-		super(dir,x,y);
+	public DisparoJugador(int dir,float x,float y,int v,Tanque t) {
+		super(dir,x,y,t);
 		velocidad= v;
 	}
 

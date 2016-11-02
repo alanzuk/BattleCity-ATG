@@ -57,7 +57,6 @@ public abstract class GameObject implements Elemento {
 	public void plomo(){
 		vida--;
 		path_dinamico=""+vida;
-		
 		refrescarPosicion();
 	}
 	

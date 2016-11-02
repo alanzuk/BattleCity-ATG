@@ -1,0 +1,52 @@
+package Poderes;
+
+import java.awt.Rectangle;
+
+import javax.swing.JLabel;
+
+import General.GameObject;
+import Tanque.Tanque;
+import Visitor.Visitante;
+
+public class Casco extends Powerup {
+	public Casco(){}
+	
+	
+	public Casco(int dir,float x, float y,Tanque t) {
+		this.x=x;
+		this.y=y;
+		grafico= new JLabel();
+		path="casco";
+		path_dinamico="";
+		vida=1;
+		rectangulo=new Rectangle((int)x,(int)y,5,5);
+	}
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+
+	@Override
+	public boolean getAvanzable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Rectangle getRectangulo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Visitante getVisitante() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean colision(GameObject obj1, GameObject obj2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}

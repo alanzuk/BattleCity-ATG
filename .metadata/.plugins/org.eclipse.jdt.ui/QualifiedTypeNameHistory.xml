@@ -6,9 +6,13 @@
 <fullyQualifiedTypeName name="javax.sound.sampled.AudioSystem"/>
 <fullyQualifiedTypeName name="javax.sound.sampled.AudioInputStream"/>
 <fullyQualifiedTypeName name="java.io.File"/>
-<fullyQualifiedTypeName name="Aplicacion.GUI"/>
 <fullyQualifiedTypeName name="java.awt.GridBagLayout"/>
 <fullyQualifiedTypeName name="java.util.Timer"/>
 <fullyQualifiedTypeName name="javax.swing.Timer"/>
+<fullyQualifiedTypeName name="Aplicacion.GUI"/>
+<fullyQualifiedTypeName name="Visitor.VisitanteConcretoProyectilEnemigo"/>
+<fullyQualifiedTypeName name="Tanque.Tanque"/>
 <fullyQualifiedTypeName name="Proyectil.DisparoEnemigo"/>
+<fullyQualifiedTypeName name="Poderes.Powerup"/>
+<fullyQualifiedTypeName name="Poderes.Casco"/>
 </qualifiedTypeNameHistroy>
