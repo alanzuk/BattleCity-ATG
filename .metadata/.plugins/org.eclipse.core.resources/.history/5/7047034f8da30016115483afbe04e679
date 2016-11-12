@@ -1,0 +1,20 @@
+package Aplicacion;
+
+public class timer implements Runnable{
+		protected static int segundos=0;
+
+		
+		public void run() {
+			
+				while(true){
+					try {
+						Thread.sleep(1000);
+						segundos++;
+					} catch (InterruptedException e) {	}
+					
+			}
+			
+		}
+		public static void reset(){segundos=0;}
+		public static int tiempo(){return segundos;}
+}

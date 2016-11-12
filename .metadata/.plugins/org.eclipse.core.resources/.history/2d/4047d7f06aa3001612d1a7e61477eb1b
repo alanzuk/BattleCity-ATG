@@ -1,0 +1,47 @@
+package Tanque;
+import java.awt.Rectangle;
+
+import javax.swing.JLabel;
+
+import General.*;
+import Proyectil.Proyectil;
+import Visitor.Visitante;
+
+public class Rapido extends Enemigo {
+	
+	protected final static String  ruta="T_Rapido";
+	
+	public Rapido(int x,int y){
+		this.x=x;
+		this.y=y;
+		avanzable=true;
+		destructible=true;
+		direccion=2;
+		velocidadMov=3;
+		velocidadDisp=1;
+		aguante=1;
+		//Inicializo el JLabel
+		path=ruta;
+		path_dinamico=""+direccion;
+		simultaneo=1;
+		grafico=new JLabel();
+		refrescarPosicion();
+		recompensa=400;
+		rectangulo= new Rectangle(x,y,tamanio_celda,tamanio_celda);
+		vida=1;
+	}
+
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+
+	@Override
+	public float getVelocidadMov() {
+		return velocidadMov;
+	}
+
+	public boolean getAvanzable() {
+		return false;
+	}
+}

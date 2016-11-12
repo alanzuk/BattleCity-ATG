@@ -1,0 +1,94 @@
+package Tanque;
+
+import General.GameObject;
+import Proyectil.DisparoEnemigo;
+import Proyectil.Proyectil;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoEnemigo;
+
+public abstract class Enemigo extends Tanque {
+	
+	protected int recompensa;
+	protected Visitante visitante=new VisitanteConcretoEnemigo();	
+	
+	public int getRecompensa(){
+		return recompensa;
+	}
+	
+	
+	public void movimientoFeroz(){
+		
+	}
+	public int getVida(){
+		return this.vida;
+	}
+	public Proyectil disparar(){
+	float x_disp=x;
+	float y_disp=y;
+	simultaneo--;
+	switch(direccion){
+			case (1):{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+			case 2:{
+				x_disp=x+((tamanio_celda/100)/2);
+				y_disp=y-(tamanio_celda/100);
+				break;
+			}
+			case 3:{
+				y_disp=y+((tamanio_celda/100)/2);
+				x_disp=x+(tamanio_celda/100);
+				break; 
+			}
+			case 4:{
+				x_disp=x+((tamanio_celda/100)/2);
+				break;
+			}
+		}	
+		
+	 	return new DisparoEnemigo(direccion,x_disp,y_disp,(int)this.velocidadDisp,this);
+	}
+
+	public void afectar(Visitante v){
+		v.visit(this);
+	}
+	
+	public boolean colision(GameObject obj1, GameObject obj2){
+		
+		boolean b=false;
+		 if(obj1.getAvanzable() && obj2.getAvanzable()){
+			 obj1.afectar(new VisitanteConcretoEnemigo());
+		     b=true;
+		 }
+	      else	{
+			 	b=!(this.getRectangulo().intersects(obj1.getRectangulo()) 
+			 			&& this.getRectangulo().intersects(obj2.getRectangulo())) ;
+			 	
+			 	if (this.getRectangulo().intersects(obj1.getRectangulo())){
+			 			obj1.afectar(new VisitanteConcretoEnemigo());
+			 			this.afectar(obj1.getVisitante());
+			 	}
+			 	
+			 	if (this.getRectangulo().intersects(obj2.getRectangulo())){
+			 			obj2.afectar(new VisitanteConcretoEnemigo());
+			 			this.afectar(obj2.getVisitante());
+			 	}
+			 
+		 }
+		
+		return b;
+	}
+	
+	public Visitante getVisitante(){
+		return visitante;
+	}
+
+	public void marchaAtraz() {
+		if(direccion % 2 ==0)
+			direccion--;
+		else
+			direccion++;	
+	}
+
+}

@@ -1,0 +1,30 @@
+package Aplicacion;
+
+import java.awt.EventQueue;
+
+import General.Logica;
+
+public class Launcher {
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			
+			public void run() {
+				try {
+					GUI Gui=new GUI();
+					Logica Juego=new Logica();
+					Gui.setLogica(Juego);
+					Thread t2=new Thread(Gui);
+					t2.start();
+					Thread t1=new Thread(Juego);
+					t2.start();
+					GUI.playIntro();
+
+
+				}
+				catch(Exception e){}
+
+
+	}
+		});}
+}

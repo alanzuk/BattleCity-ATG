@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import Visitor.Visitante;
 
 public class Cemento extends Obstaculo {
-	private static final String ruta="Cemento";
+	private static String ruta="Cemento";
 	
 	public Cemento(int x,int y){
 		this.x=x;
@@ -17,7 +17,7 @@ public class Cemento extends Obstaculo {
 		grafico=new JLabel();
 		refrescarPosicion();
 		rectangulo=new Rectangle(x,y,tamanio_celda,tamanio_celda);
-		vida=8;
+		vida=4;
 
 	}
 	
@@ -31,6 +31,16 @@ public class Cemento extends Obstaculo {
 	
 	public void afectar(Visitante v){
 		v.visit(this);
+		
+	}
+
+	public void maximo() {
+		vida=0;
+		avanzable=true;
+		path="";
+		path_dinamico="";
+		destructible=false;
+		refrescarPosicion();
 		
 	}
 }

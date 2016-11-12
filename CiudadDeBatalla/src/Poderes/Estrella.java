@@ -12,7 +12,7 @@ public class Estrella extends Powerup{
 		this.x=x;
 		this.y=y;
 		grafico= new JLabel();
-		path="estrella";
+		path="PU_Estrella";
 		path_dinamico="";
 		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
 	}
@@ -30,5 +30,8 @@ public class Estrella extends Powerup{
 		
 		return new VisitanteConcretoPoder();
 	}
-	
+	public void efecto() {
+		juego.Estrella();
+		
+	}
 }

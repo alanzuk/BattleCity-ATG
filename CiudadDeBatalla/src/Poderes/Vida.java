@@ -12,23 +12,24 @@ public class Vida extends Powerup{
 		this.x=x;
 		this.y=y;
 		grafico= new JLabel();
-		path="vida";
+		path="PU_Vida";
 		path_dinamico="";
 		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
 	}
 	public void afectar(Visitante v){
 		v.visit(this);
-		
 	}
-	public Rectangle getRectangulo() {
 	
+	public Rectangle getRectangulo() {	
 		return rectangulo;
 	}
 
 	@Override
 	public Visitante getVisitante() {
-		
 		return new VisitanteConcretoPoder();
+	}
+	public void efecto() {
+		juego.Vida();
 	}
 	
 }

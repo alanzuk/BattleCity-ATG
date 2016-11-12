@@ -1,0 +1,25 @@
+package Tanque;
+
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoProyectil;
+import Visitor.VisitanteConcretoProyectilMaximo;
+
+public class Nivel4 extends Nivel {
+
+	public Nivel4(){
+		 simultaneo=3;
+		 rutaGrafica="Jugador";
+		 velocidadMov=2;
+		 velocidadDisp=3;
+	}
+
+	public Nivel subirNivel() {
+		return this;
+	}
+	public Nivel bajarNivel(){
+		return new Nivel3();
+	}
+	public Visitante getVisitante(){
+		return new VisitanteConcretoProyectilMaximo();
+	}
+}

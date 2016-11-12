@@ -1,0 +1,126 @@
+package Poderes;
+
+import java.awt.Rectangle;
+import java.util.LinkedList;
+
+import javax.swing.JLabel;
+
+import General.GameObject;
+import General.Logica;
+import Obstaculo.Cemento;
+import Obstaculo.Ladrillo;
+import Obstaculo.Obstaculo;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoPoder;
+
+public class Pala extends Powerup implements Runnable{
+
+	public Pala(int x, int y) {
+		this.x=x;
+		this.y=y;
+		grafico= new JLabel();
+		path="PU_PALA";
+		path_dinamico="";
+		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
+	}
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+	public Rectangle getRectangulo() {
+	
+		return rectangulo;
+	}
+
+	@Override
+	public Visitante getVisitante() {
+		
+		return new VisitanteConcretoPoder();
+	}
+	
+	
+	
+	@Override
+	public void run() {
+		double duracion=juego.getTiempo();
+		double efecto= (duracion+5);
+		ponerBarrera();
+		juego.getGui().refreshGUI();
+		juego.getGui().actualizarListaObstaculos(juego.getObstaculos());
+
+		while(duracion<efecto){
+			duracion+=0.05;
+			System.out.println("duracion : "+duracion+"efecto: "+efecto);
+			try {
+				Thread.sleep(70);
+			} catch (InterruptedException e) {}
+		}
+		sacarBarrera();
+		juego.getGui().refreshGUI();
+		juego.getGui().actualizarListaObstaculos(juego.getObstaculos());
+	}
+	private void sacarBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		LinkedList<Obstaculo> misObstaculos=juego.getObstaculos();
+		Ladrillo c1= new Ladrillo(8,17);
+		Ladrillo c2= new Ladrillo(8,16);
+		Ladrillo c3= new Ladrillo(9,16);
+		Ladrillo c4= new Ladrillo(10,16);
+		Ladrillo c5= new Ladrillo(10,17);
+		GameObject l1= mapa[8][17];
+		GameObject l2= mapa[8][16];
+		GameObject l3= mapa[9][16];
+		GameObject l4= mapa[10][16];
+		GameObject l5= mapa[10][17];
+		juego.eliminarObstaculo(l1);
+		juego.eliminarObstaculo(l2);
+		juego.eliminarObstaculo(l3);
+		juego.eliminarObstaculo(l4);
+		juego.eliminarObstaculo(l5);
+		misObstaculos.addLast(c1);
+		misObstaculos.addLast(c2);
+		misObstaculos.addLast(c3);
+		misObstaculos.addLast(c4);
+		misObstaculos.addLast(c5);
+		mapa[8][17]=c1;
+		mapa[8][16]=c2;
+		mapa[9][16]=c3;
+		mapa[10][16]=c4;
+		mapa[10][17]=c5;
+	}
+	private void ponerBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		LinkedList<Obstaculo> misObstaculos=juego.getObstaculos();
+		Cemento c1= new Cemento(8,17);
+		Cemento c2= new Cemento(8,16);
+		Cemento c3= new Cemento(9,16);
+		Cemento c4= new Cemento(10,16);
+		Cemento c5= new Cemento(10,17);
+		GameObject l1= mapa[8][17];
+		GameObject l2= mapa[8][16];
+		GameObject l3= mapa[9][16];
+		GameObject l4= mapa[10][16];
+		GameObject l5= mapa[10][17];
+		juego.eliminarObstaculo(l1);
+		juego.eliminarObstaculo(l2);
+		juego.eliminarObstaculo(l3);
+		juego.eliminarObstaculo(l4);
+		juego.eliminarObstaculo(l5);
+		misObstaculos.addLast(c1);
+		misObstaculos.addLast(c2);
+		misObstaculos.addLast(c3);
+		misObstaculos.addLast(c4);
+		misObstaculos.addLast(c5);
+		mapa[8][17]=c1;
+		mapa[8][16]=c2;
+		mapa[9][16]=c3;
+		mapa[10][16]=c4;
+		mapa[10][17]=c5;
+	}
+	
+	public void efecto() {
+		juego.Pala();
+		
+	}
+	
+}

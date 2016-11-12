@@ -3,6 +3,7 @@ package Visitor;
 import Obstaculo.*;
 import Proyectil.DisparoEnemigo;
 import Proyectil.DisparoJugador;
+import Proyectil.DisparoJugadorMaximo;
 import Tanque.Enemigo;
 import Tanque.Jugador;
 import Poderes.*;
@@ -28,6 +29,7 @@ public interface Visitante {
 	public void visit(Reloj r);
 	public void visit(Vida v);
 	public void visit(Limite limite);
+	public void visit(DisparoJugadorMaximo disparoJugadorMaximo);
 
 
 }

@@ -1,0 +1,33 @@
+package Tanque;
+
+public abstract class Nivel {
+	protected int simultaneo;
+	protected String rutaGrafica;
+	protected float velocidadMov;
+	protected float velocidadDisp;	
+	public abstract int getSimultaneo();
+
+	
+	public abstract String getRutaGrafica();
+
+	public float getVelocidadMov(){
+		return velocidadMov;
+	}
+	
+	public float getVelocidadDisp(){
+		return velocidadDisp;
+	}
+
+	public abstract Nivel subirNivel();
+
+
+	public void disparar() {
+		simultaneo--;		
+	}
+	
+	public void setDisparo(){
+		simultaneo++;
+	}
+
+}
+

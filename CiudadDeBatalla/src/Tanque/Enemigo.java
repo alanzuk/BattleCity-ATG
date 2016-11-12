@@ -14,6 +14,13 @@ public abstract class Enemigo extends Tanque {
 		return recompensa;
 	}
 	
+	
+	public void movimientoFeroz(){
+		
+	}
+	public int getVida(){
+		return this.vida;
+	}
 	public Proyectil disparar(){
 	float x_disp=x;
 	float y_disp=y;
@@ -41,13 +48,6 @@ public abstract class Enemigo extends Tanque {
 		
 	 	return new DisparoEnemigo(direccion,x_disp,y_disp,(int)this.velocidadDisp,this);
 	}
-	
-	public int morir(){
-		path="";
-		path_dinamico="";
-		refrescarPosicion();
-		return recompensa;
-	}
 
 	public void afectar(Visitante v){
 		v.visit(this);
@@ -73,7 +73,6 @@ public abstract class Enemigo extends Tanque {
 			 			obj2.afectar(new VisitanteConcretoEnemigo());
 			 			this.afectar(obj2.getVisitante());
 			 	}
-			 
 			 
 		 }
 		

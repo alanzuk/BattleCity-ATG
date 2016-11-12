@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import Aplicacion.GUI;
+import Aplicacion.Temporizador;
 
 import java.awt.Component;
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ import Obstaculo.Obstaculo;
 import Obstaculo.Vacio;
 import Poderes.*;
 import Proyectil.Proyectil;
+import Tanque.Basico;
 import Tanque.Blindado;
 import Tanque.Enemigo;
 import Tanque.Jugador;
@@ -28,34 +30,51 @@ import Tanque.Rapido;
 import Tanque.Tanque;
 
 public class Logica implements Runnable{
-	//LISTAS
+	
+	/**
+	 * Listas del Juego y atributos 
+	 */
+	
 	protected LinkedList<Enemigo> misEnemigos;
 	protected LinkedList<Obstaculo> misObstaculos;
 	protected LinkedList<Proyectil> misProyectiles;
+	protected LinkedList<Proyectil> misProyectilesEnemigos;
 	
+	protected int iteracion=0;
+	protected volatile int oleada=1;
 	protected Jugador miJugador;
 	protected GameObject[][] mapa;
-	protected Powerup[] miPowerup;
 	protected int puntos;
-	protected volatile static boolean seguir=true;
-
+	protected volatile  boolean seguir=true;
+	protected volatile  boolean pausa=false;
+	protected volatile  boolean power=false;
+	protected Temporizador temporizador;
+	protected int enemigosRestantes;
+	protected GUI ventana;
+	
 	public Logica(){
 		
 		misEnemigos= new LinkedList<Enemigo>();
 		misObstaculos=new LinkedList<Obstaculo>();
 		misProyectiles = new LinkedList<Proyectil>();
-		
-		miPowerup= new Powerup[6];
+		misProyectilesEnemigos = new LinkedList<Proyectil>();
 		miJugador=new Jugador(7,17);
-	
-		//Creacion del mapa
+		enemigosRestantes=16;
+		puntos=0;
+		temporizador=new Temporizador(this);
+    	
+		/**
+		 * Creacion del tablero de juego
+		 */
 		
 		mapa=new GameObject[19][19];
 		
-		//Para Guardar las rutas de las imagenes 
-		
+		/**
+		 * Se carga el archivo con el contenido del nivel. 
+		 */
 	
-			File a= new File("src/Aplicacion/Nivel1.txt");
+		File a= new File("src/Aplicacion/Nivel1.txt");
+		
 		try{
 			FileReader fr= new FileReader(a);
 			BufferedReader br= new BufferedReader(fr);
@@ -65,7 +84,7 @@ public class Logica implements Runnable{
 				s=br.readLine();
 				for(int c=0; c<19;c++){
 					char tipo=s.charAt(c);
-					crearGameObject(c,f,tipo); //metodo privado
+					crearGameObject(c,f,tipo); 
 				}	
 			}
 			br.close();
@@ -74,51 +93,57 @@ public class Logica implements Runnable{
 		
 	}
 	
+	/**
+	 * Realiza la creacion del GameObject concreto y lo coloca en el tablero.
+	 */
+	
+	public void setGui(GUI v){
+		ventana=v;
+	}
 	
 	private void crearGameObject(int f, int c, char tipo) {
-		
 		switch(tipo){
-		
-		case 'P' :{
+			case 'P' :{
 				mapa[f][c]=new Limite(f,c);
+				misObstaculos.addLast((Obstaculo)mapa[f][c]);
 				break;
-		}
-		case 'a' :{ mapa[f][c]=new Agua(f,c); 
+			}
+			case 'a' :{ mapa[f][c]=new Agua(f,c); 
 					misObstaculos.addLast((Obstaculo)mapa[f][c]);
 					break;
-		}
-		case 'l' :{ mapa[f][c]=new Ladrillo(f,c);
+			}
+			case 'l' :{ mapa[f][c]=new Ladrillo(f,c);
 					misObstaculos.addLast((Obstaculo)mapa[f][c]);
 					break;
-		}
-		case 'c' :{ mapa[f][c]=new Cemento(f,c);
+			}
+			case 'c' :{ mapa[f][c]=new Cemento(f,c);
 					misObstaculos.addLast((Obstaculo)mapa[f][c]);
 					break;
-		}
-		case ' ' :{ mapa[f][c]=new Vacio(f,c); 
+			}
+			case ' ' :{ mapa[f][c]=new Vacio(f,c); 
 					break;
-		}
-		case 'e' :{ mapa[f][c]=new Vacio(f,c); 
-					Enemigo e=new Blindado(f,c); 
-					misEnemigos.addLast((Enemigo) e);
-		break;
-		}
-		case 'x' :{ mapa[f][c]=new Aguila(f,c); 
-		break;
-		}
-		case 'r' :{ mapa[f][c]=new Rapido(f,c); 
-		break;
-		}
-		case 'j' :{ mapa[f][c]=new Vacio(f,c); 
-		break;
-		}
+			}
+			case 'e' :{ mapa[f][c]=new Vacio(f,c); 
+					break;
+			}
+			case 'x' :{ mapa[f][c]=new Aguila(f,c,this);
+					misObstaculos.addLast((Obstaculo)mapa[f][c]);
+					break;
+			}
+			case 'r' :{ mapa[f][c]=new Vacio(f,c); 
+					break;
+			}
+			case 'j' :{ mapa[f][c]=new Vacio(f,c); 
+					break;
+			}
 		}
 	}
 
-
-	//Consultas 
+	/**
+	 * Consultas utilizadas por la parte grafica del Juego 
+	 */
 	
-	public Tanque getJugador(){
+	public Jugador getJugador(){
 		return miJugador;
 	}
 	
@@ -126,126 +151,388 @@ public class Logica implements Runnable{
 		return mapa;
 	}
 	
-	//Comandos
-	
-	public void gameOver(){
-		
+	public LinkedList<Proyectil> getProyectiles(){
+		return misProyectiles;
 	}
 	
-	
-	public void run(){
-	 while(seguir){
-		 try{
-			 //SONIDO MOTOR TANQUE
-				// GUI.playMotor();
-
-		
-			 
-			 
-			 Iterator<Proyectil> itProyectil=misProyectiles.iterator();
-			 Proyectil p;
-			 while(itProyectil.hasNext()){
-				 
-				 p=itProyectil.next();
-				
-				 for(Enemigo e:misEnemigos){
-					 
-					if(cuentaInter(e, p)){
-						p.afectar(e.getVisitante());
-				 		e.afectar(p.getVisitante());
-					}
-					
-					if(cuentaInter(miJugador,p)){
-						p.afectar(miJugador.getVisitante());
-						miJugador.afectar(p.getVisitante());
-					}
-					
-					
-				 }
-				 
-				 if(p.getVida()>0){
-					 if(caminoLibre(p)){
-						 p.mover(p.getDireccion());
-					 }
-				 }
-				 else{
-					 if(p.getVida()==0){//Si la vida es igual a 0 entonces debo eliminar algo 
-						p.getTanqueDisparador().setSimultaneo();
-						System.out.println(" El path "+p.getTanqueDisparador().getSimultaneo());
-						eliminarProyectil(p);
-					 	itProyectil.remove();
-					 	//ELIMINO OBSTACULOS 
-					 	Iterator<Obstaculo> itObstaculo=misObstaculos.iterator();
-					 	Obstaculo o;
-					 	while(itObstaculo.hasNext()){
-					 		o=itObstaculo.next();
-					 		if(o.getVida()==0){
-					 			eliminarObstaculo(o);
-					 			itObstaculo.remove();
-					 		}
-					 	}
-					 	//ELIMINO ENEMIGO 
-					 	Iterator<Enemigo> itEnemigo=misEnemigos.iterator();
-					 	Enemigo e;
-					 	while(itEnemigo.hasNext()){
-					 		e=itEnemigo.next();
-					 		if(e.getVida()==0){
-					 			eliminarEnemigo(e);
-					 			itEnemigo.remove();
-					 		}
-					 	}
-					 } // if getvida=0 
-				 
-				}// Else
-			}// fin for each de proyectil
-			 
-
-			 
-			 for(Enemigo e:misEnemigos){
-				 Random rnd= new Random();
-				
-				 if(caminoLibre(e)){
-					 if(e.getSimultaneo()==1){
-							Proyectil pe=e.disparar();
-							if(pe!=null){
-								 misProyectiles.addLast(pe);
-								 GUI.agregarDisparo(pe);
-							
-							}
-					 }
-						 e.mover(e.getDireccion());
-				 }
-				 else{
-			    	 int nuevaDireccion= rnd.nextInt(4)+1;
-				     while(e.getDireccion()==nuevaDireccion)
-				    	 nuevaDireccion= rnd.nextInt(4)+1;
-					 e.setDireccion(nuevaDireccion);
-				}
-				 e.refrescarPosicion();
-			 }
-			
-			 
-	    	 Thread.sleep(75);
-
-		
-			 }
-	 
-	 catch(InterruptedException  e){}
-	 catch(ConcurrentModificationException e1){}
+	public LinkedList<Obstaculo> getObstaculos() {
+		return misObstaculos;
 	}
-}
-	public static void terminar(){
+	
+	public LinkedList<Enemigo> getEnemigos() {
+		return  misEnemigos;
+	}
+	
+	public int getPuntos(){
+		return puntos;
+	}
+	
+	public int getVida(){
+		return miJugador.getVida();
+	}
+	
+	public int getEnemigosRestantes(){
+		return enemigosRestantes;
+	}
+	
+	/**
+	 * Comandos ultilizados por la parte grafica del Juego 
+	 */
+	
+	public  void terminar(){
 		seguir=false;
 	}
 	
 	public void mover(int i) {
-			if(caminoLibre(miJugador))
-				miJugador.mover(i);
+		if(!pausa || power){
+			boolean movete=true;
+			if(caminoLibre(miJugador)){
+				for(Enemigo e: misEnemigos){
+					if(cuentaInter(e,miJugador) || cuentaInter(miJugador,e))
+						movete=false;
+				}
+				if(movete)miJugador.mover(i);
+				else{
+						miJugador.mover((i%4)+1);
+				}
+			}
 			else
 				miJugador.setDireccion(i);
+		}
+	}
+		
+	public void gameOver(){
+		pausa();
+		ventana.gameOver();
 	}
 	
-	public boolean cuentaInter(Movible t,Movible t1){
+	
+	/**
+	 * Hilo de ejecucion de la parte logica . 
+	 * Es el encargado de movimiento de enemigos , disparos y aparciones de powerups
+	 */
+	
+	public  void run(){
+		Thread hilo_temporizador=new Thread(temporizador);
+		hilo_temporizador.start();
+		reaparecer();
+		while(seguir){
+			
+			if(!pausa){
+			try{
+				if(enemigosRestantes==0){
+					ventana.win();
+				}
+				if(misEnemigos.isEmpty()) // Al llegar a la oleada 4 se avanza de nivel.
+					nuevaOleada();				
+					int t=temporizador.tiempo();
+					//Revisar los disparos del jugador con el resto del mapa.
+					if (t> 1.5){
+						
+						if(t%2==0) // Es para que tengan una pausa entre disparo y disparo
+							dispararEnemigos();
+						check_choqueJugador();
+						check_disparosEnemigo();
+						moverEnemigos();
+					}
+				
+				//Se controla la lista de los disparos de el Jugador.
+				check_choqueJugador();	
+				check_disparosJugador();
+				ventana.refreshGUI();
+				
+				Thread.sleep(40);
+				
+			}catch(InterruptedException  e){}
+			catch(ConcurrentModificationException e1){}
+		  }
+	   }
+	}
+	
+	
+	/**
+	 * Cuando la lista "misEnemgios" esta vacia , se hace la reaparicion de los enemigos.
+	 */
+	
+	private void nuevaOleada() {
+		switch(oleada){
+		case (1):{
+			oleada++;
+			misEnemigos.addLast(new Basico(1,1));
+			misEnemigos.addLast(new Basico(7,1));
+			misEnemigos.addLast(new Basico(11,1));
+			misEnemigos.addLast(new Basico(17,1));
+			break;
+		}case (2):{
+
+			}
+		case (3):{
+			oleada++;
+			misEnemigos.addLast(new Rapido(1,1));
+			misEnemigos.addLast(new Rapido(7,1));
+			misEnemigos.addLast(new Rapido(11,1));
+			misEnemigos.addLast(new Rapido(17,1));
+			break;
+		}case (4):{
+			oleada++;
+			misEnemigos.addLast(new Blindado(1,1));
+			misEnemigos.addLast(new Blindado(7,1));
+			misEnemigos.addLast(new Blindado(11,1));
+			misEnemigos.addLast(new Blindado(17,1));
+			break;
+		}	
+		
+		
+		}
+		ventana.actualizarListaEnemigos(misEnemigos);
+	}
+	
+	public int getSimultaneoJugador(){
+		return miJugador.getSimultaneo();
+	}
+	
+	public void eliminarEnemigo(Enemigo g){
+		enemigosRestantes--;
+		puntos+=g.getRecompensa();
+		g.morir();
+		if (puntos==1200)
+			miJugador.subirNivel();
+		if (puntos==2400)
+			miJugador.subirNivel();
+		if (puntos==3600) 
+			miJugador.subirNivel();
+		misEnemigos.remove(g);
+		g=null;
+		ventana.quitarEnemigoRestante();
+	}
+	
+	public void eliminarProyectil(Proyectil g){		
+		boolean seguir=true;
+		for(Proyectil e : misProyectiles){
+			if(e==g){
+				if(!misProyectiles.isEmpty()){
+					seguir=false;
+					g.morir();
+					g=null;	
+					break;
+				}
+			}
+			break;
+		}
+		
+		if(seguir){			
+			for(Proyectil e : misProyectilesEnemigos){
+				if(e==g){
+					if(!misProyectilesEnemigos.isEmpty()){
+						g.morir();
+						g=null;	
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+	
+	
+	public void eliminarObstaculo(GameObject g){
+		int x=(int)g.getX();
+		int y=(int)g.getY();
+		if(!misObstaculos.isEmpty()){
+			Obstaculo o=new Vacio(x,y);
+			misObstaculos.set(misObstaculos.indexOf(g),o);
+			mapa[x][y]=o;
+		}
+	}
+
+	//Metodos privados que utilizan listas
+	
+	public void check_disparosJugador(){
+		try{
+		Iterator<Proyectil> itProyectil=misProyectiles.iterator();
+		 Proyectil p;
+		 while(itProyectil.hasNext()){
+			 
+			 p=itProyectil.next();
+			
+			 for(Enemigo e:misEnemigos){
+				if(cuentaInter(e, p)){
+					p.afectar(e.getVisitante());
+			 		e.afectar(p.getVisitante());
+				}
+			 }
+			 
+			check_choqueEntreDisparos(p,misProyectilesEnemigos);
+			 
+			choqueDisparos(p);
+
+			 if(p.getVida()>0){
+				 //if(caminoLibre(p)){
+					 p.mover(p.getDireccion());
+			 }
+			 else{
+				 if(p.getVida()==0){//Si la vida es igual a 0 entonces debo eliminar algo 
+					eliminarProyectil(p);
+				 	itProyectil.remove();
+				 	//ELIMINO OBSTACULOS 
+				 	Iterator<Obstaculo> itObstaculo=misObstaculos.iterator();
+				 	GameObject o;
+				 	while(itObstaculo.hasNext()){
+				 		o=itObstaculo.next();
+				 		if(o.getVida()==0){
+				 			eliminarObstaculo(o);
+				 		}
+				 	}
+				 	//ELIMINO ENEMIGO 
+				 	Iterator<Enemigo> itEnemigo=misEnemigos.iterator();
+				 	Enemigo e;
+				 	while(itEnemigo.hasNext()){
+				 		e=itEnemigo.next();
+				 		if(e.getVida()==0){
+				 			eliminarEnemigo(e);
+				 			itEnemigo.remove();
+				 			break;
+				 		}
+				 	}
+				 } 
+			 
+			 }
+		}
+		}
+		catch(Exception e){}
+	}
+	
+    private void check_choqueEntreDisparos(Proyectil p,LinkedList<Proyectil> lista) {
+    	
+    	for(Proyectil disp:lista){
+    		if(p.getDestructible() && disp.getDestructible()){
+    		if(cuentaInter(p,disp) || cuentaInterDisparos(p,disp)){
+    			p.afectar(disp.getVisitante());
+    			disp.afectar(p.getVisitante());
+    		}
+    		}
+    	}
+		
+	}
+
+	public void subirNivel(){
+    		miJugador.subirNivel();
+    }
+
+	public void pausa() {
+		if(pausa)
+			pausa=false;
+		else
+			pausa=true;
+	}
+	
+	/**
+	 * Metodos que se encargan de los movimientos de los enemigos y proyectiles
+	 * Asi tambien de las colisiones entre las listas y el tablero.
+	 */
+	
+	private void dispararEnemigos(){
+		for(Enemigo e: misEnemigos){
+			if(e.getSimultaneo()==1){
+				Proyectil pe=e.disparar();
+				if(pe!=null){
+					 misProyectilesEnemigos.addLast(pe);
+					 ventana.agregarDisparo(pe);
+				}
+		    }
+	   }
+	}
+	public void check_choqueJugador(){
+		
+		for(Enemigo disp: misEnemigos){
+    		if(cuentaInter(miJugador,disp) || cuentaInterDisparos(disp,miJugador)){
+    			disp.marchaAtraz();
+    		
+    		}
+    	}
+		
+		
+	}
+	public void check_disparosEnemigo(){
+		if(!power){
+		Iterator<Proyectil> itProyectil=misProyectilesEnemigos.iterator();
+		 Proyectil p;
+		 while(itProyectil.hasNext()){
+			 
+			 p=itProyectil.next();
+							 
+				if(cuentaInter(miJugador, p)){
+					p.afectar(miJugador.getVisitante());
+					miJugador.afectar(p.getVisitante());
+					reaparecer();
+				}
+				
+				check_choqueEntreDisparos(p,misProyectiles);
+				choqueDisparos(p);
+				
+			 if(p.getVida()>0){
+					 p.mover(p.getDireccion());
+			 }
+			 else{
+				 if(p.getVida()==0){//Si la vida es igual a 0 entonces debo eliminar algo 
+					eliminarProyectil(p);
+				 	itProyectil.remove();
+				 	//ELIMINO OBSTACULOS 
+				 	Iterator<Obstaculo> itObstaculo=misObstaculos.iterator();
+				 	GameObject o;
+				 	while(itObstaculo.hasNext()){
+				 		o=itObstaculo.next();
+				 		if(o.getVida()==0){
+				 			eliminarObstaculo(o);
+				 		}
+				 	}
+				 } 
+			 }
+		}
+		}
+		else{
+			Iterator<Proyectil> itProyectil=misProyectilesEnemigos.iterator();
+			Proyectil p;
+			 while(itProyectil.hasNext()){ 
+				p=itProyectil.next();
+				check_choqueEntreDisparos(p,misProyectiles);
+				}
+			}
+	}
+
+	private void reaparecer() {
+		if(miJugador.getVida()==0){
+    		pausa();
+    		ventana.gameOver();
+    	}
+		miJugador.setNivel();
+		Powerup c=new Casco(7,12);
+		c.setLogica(this);
+    	Thread y= new Thread((Runnable)c);
+    	y.start();
+	}
+
+	private void moverEnemigos() {
+		for(Enemigo e:misEnemigos){
+			choqueEnemigo(e);
+			if(cuentaInter(miJugador,e))
+				e.marchaAtraz();
+			 Random rnd= new Random();
+			 if(caminoLibre(e)){
+				e.mover(e.getDireccion());
+			 }
+			 else{
+		    	 int nuevaDireccion= rnd.nextInt(4)+1;
+			     while(e.getDireccion()==nuevaDireccion)
+			    	 nuevaDireccion= rnd.nextInt(4)+1;
+				 e.setDireccion(nuevaDireccion);
+			}
+			 choqueEnemigo(e);	 
+			 e.refrescarPosicion();
+		 }
+	}
+	
+	private boolean cuentaInter(GameObject t,GameObject t1){
 		float x1=t.getX();
 		float y1=t.getY();
 		float x2=t1.getX();
@@ -260,7 +547,34 @@ public class Logica implements Runnable{
 		return seChocan;
 	}
 	
-	public boolean choqueEnemigo(Tanque v,float x ,float y){
+	private boolean cuentaInterDisparos(GameObject t,GameObject t1){
+		float x1=t.getX();
+		float y1=t.getY();
+		float x2=t1.getX();
+		float y2=t1.getY();
+		boolean seChocan=false;
+		float resX=x1-x2;
+		float resY=y1-y2;
+		if(0.5f>resX && -0.5f<resX && 0.5f>resY && -0.5f<resY ){
+			seChocan=true;
+		}
+		return seChocan;
+	}
+	
+	private boolean choqueDisparos(Proyectil p){
+		for(Obstaculo o:misObstaculos){
+			if(!o.getAvanzable()){
+				if(cuentaInterDisparos(p,o)){
+					o.afectar(p.getVisitante());
+					p.afectar(o.getVisitante());
+					return true;
+				}
+			}
+			
+		}
+		return false;
+	}
+	private boolean choqueEnemigo(Tanque v){
 		
 		for(Enemigo e:misEnemigos){
 			if(e!=v){
@@ -284,9 +598,8 @@ public class Logica implements Runnable{
 		return false;
 	}
 	
-	
 	private boolean caminoLibre(Movible t) {
-		
+		try{
 		int i=t.getDireccion();
 		t.refrescarPosicion();
 		float x=t.getX();
@@ -297,8 +610,6 @@ public class Logica implements Runnable{
 		switch(i){
 			case 1:{
 				y-=0.2;
-				
-				
 				xI=redondeoAbajo(x);
 				yI=redondeoAbajo(y);
 						t.refrescarPosicion();				 
@@ -331,10 +642,8 @@ public class Logica implements Runnable{
 				xI=redondeoArriba(x);
 				yI=redondeoArriba(y);
 							GameObject obj2=mapa[xI][yI];
-							b= t.colision(obj1, obj2);
-				 
+							b= t.colision(obj1, obj2);	 
 				 break;
-
 			}
 			case 4:{
 				x-=0.2;
@@ -349,8 +658,11 @@ public class Logica implements Runnable{
 				break;
 			}
 		}
-		
 		return b;
+		}
+		catch(Exception e){
+			return false;
+		}
 	}
 
 	private int redondeoAbajo(float f){
@@ -361,6 +673,7 @@ public class Logica implements Runnable{
 		return Integer.parseInt(xIp);
 		
 	}
+	
 	private int redondeoArriba(float f){
 		DecimalFormat dfY = new DecimalFormat("##");
 		dfY.setRoundingMode(RoundingMode.CEILING);
@@ -369,105 +682,123 @@ public class Logica implements Runnable{
 		return Integer.parseInt(yIp);
 	}
 	
-	public LinkedList<Enemigo> getEnemigos() {
-		return  misEnemigos;
-	}
-
-
-	public Enemigo addEnemigo()  {
-			misEnemigos.addLast(new Blindado(0,0));
-			return misEnemigos.getLast();
-	}
 	
-	public int getSimultaneoJugador(){
-		return miJugador.getSimultaneo();
-	}
+	/**
+	 * POWERUPS
+	 * Implementacion de los efectos y la aparicion.
+	 */
 	
-	public void eliminarEnemigo(Enemigo g){
-		//Si es un Enemigo
-		for(Enemigo e : misEnemigos){
-			if(e==g){
-				if(!misEnemigos.isEmpty()){
-					puntos+=g.morir();
-					if(puntos==1200) miJugador.subirNivel();
-						g=null;		
-					break;
-				}
-				
-			}
-		}
-	}
 	
-	public void eliminarProyectil(Proyectil g){
-		//Si es Proyectil
-		for(Proyectil e : misProyectiles){
-			if(e==g){
-				if(!misProyectiles.isEmpty()){
-					g.morir();
-					g=null;	
-					break;
-				}
-			}
-		}
-	}
 	
-	public void eliminarObstaculo(Obstaculo g){
-	
-		//Si es un Obstaculo
-		for(Obstaculo e : misObstaculos){
-			if(e==g){
-				if(!misObstaculos.isEmpty()){
-					g.morir();
-					float x=g.getX();
-					float y=g.getY();
-					mapa[(int)x][(int)y]=new Vacio((int)x,(int)y);
-					g=null;		
-					break;
-				}
-			}
-		}
-					
+	//tecla 6
+	public  void Granada(){
+    	for(Enemigo e : misEnemigos){
+			puntos+=e.getRecompensa();
+			e.morir();
+			if(puntos==1200)miJugador.subirNivel();
+			if (puntos==2400) miJugador.subirNivel();
+			if (puntos==3600) miJugador.subirNivel();
 	}
-	
-	public LinkedList<Proyectil> getProyectiles(){
-		return misProyectiles;
-	}
-	
-	public LinkedList<Obstaculo> getObstaculos() {
-		return misObstaculos;
-	}
-	
-	public int getPuntos(){
-		return puntos;
-	}
-    public void subirNivel(){
-    		miJugador.subirNivel();
+       enemigosRestantes-=misEnemigos.size();
+	   misEnemigos.removeAll(misEnemigos);
+	   mapa[7][12]=new Vacio(7,12);
     }
-
-
+   
+	//Tecla 3
+    public void Vida() {
+    	miJugador.addVida();
+		mapa[7][12]=new Vacio(7,12);
+	}
+    //Tecla 2
+    public  void Estrella(){
+    	miJugador.subirNivel();
+		mapa[7][12]=new Vacio(7,12);
+		
+    }
+    public void Casco(){
+    	Thread y= new Thread((Casco)mapa[7][12]);
+    	y.start();
+    	mapa[7][12]=new Vacio(7,12);
+    
+    }
+    //tecla 5
+    public void Pala(){
+    	Thread y= new Thread((Pala)mapa[7][12]);
+    	y.start();
+    	mapa[7][12]=new Vacio(7,12);
+    }
+    //Tecla 4
+    public void Reloj(){
+    	Thread y= new Thread((Reloj)mapa[7][12]);
+    	power=true;
+    	pausa();
+    	y.start();
+    	mapa[7][12]=new Vacio(7,12);
+    }
+ // Tecla 3
+ 	public Component PonerVida() {
+ 		Powerup c=new Vida(7,12);
+ 		c.setLogica(this);
+ 		mapa[7][12]=c;
+ 		return c.getGrafico();
+ 	}
 	public Component PonerCasco() {
 		Powerup c=new Casco(7,12);
+		c.setLogica(this);
+ 		mapa[7][12]=c;
 		return c.getGrafico();
 	}
-    
+    //tecla 4
 	public Component PonerReloj() {
 		Powerup c=new Reloj(7,12);
-		return c.getGrafico();
+		c.setLogica(this);
+ 		mapa[7][12]=c;
+ 		return c.getGrafico();
 	}
+	
 	public Component PonerGranada() {
 		Powerup c=new Granada(7,12);
-		return c.getGrafico();
+		c.setLogica(this);
+ 		mapa[7][12]=c;
+ 		return c.getGrafico();
 	}
+	
 	public Component PonerEstrella() {
 		Powerup c=new Estrella(7,12);
-		return c.getGrafico();
+		c.setLogica(this);
+ 		mapa[7][12]=c;
+ 		return c.getGrafico();
 	}
-	public Component PonerVida() {
-		Powerup c=new Vida(7,12);
-		return c.getGrafico();
-	}
+	
 	public Component PonerPala() {
 		Powerup c=new Pala(7,12);
-		return c.getGrafico();
+		c.setLogica(this);
+ 		mapa[7][12]=c;
+ 		return c.getGrafico();
 	}
+
+	public GUI getGui() {
+		return ventana;
+	}
+
+	public int getTiempo() {
+		return temporizador.tiempo();
+	}
+
+	public void setPower() {
+		power=false;
+		
+	}
+
+	public void reiniciar() {
+		misEnemigos.removeAll(misEnemigos);
+		misObstaculos.removeAll(misObstaculos);
+		misProyectiles.removeAll(misProyectiles);
+		misProyectilesEnemigos.removeAll(misProyectilesEnemigos);
+		enemigosRestantes=16;
+		puntos=0;
+		Thread.interrupted();
+	}
+
+
 }

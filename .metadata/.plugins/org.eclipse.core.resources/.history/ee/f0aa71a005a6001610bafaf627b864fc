@@ -1,0 +1,102 @@
+package Poderes;
+
+import java.awt.Rectangle;
+import java.util.LinkedList;
+
+import javax.swing.JLabel;
+
+import General.GameObject;
+import General.Logica;
+import Obstaculo.Cemento;
+import Obstaculo.Ladrillo;
+import Obstaculo.Obstaculo;
+import Obstaculo.Vacio;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoPoder;
+
+public class Pala extends Powerup implements Runnable{
+
+	public Pala(int x, int y) {
+		this.x=x;
+		this.y=y;
+		grafico= new JLabel();
+		path="PU_PALA";
+		path_dinamico="";
+		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
+	}
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+	public Rectangle getRectangulo() {
+	
+		return rectangulo;
+	}
+
+	@Override
+	public Visitante getVisitante() {
+		
+		return new VisitanteConcretoPoder();
+	}
+	
+	
+	
+	@Override
+	public void run() {
+		
+		double duracion=juego.getTiempo();
+		double efecto= (duracion+5);
+		ponerBarrera();
+		while(duracion<efecto){
+			duracion+=0.05;
+			System.out.println("duracion : "+duracion+"efecto: "+efecto);
+			try {
+				Thread.sleep(70);
+			} catch (InterruptedException e) {}
+		}
+		sacarBarrera();
+		
+	}
+		
+		
+	
+			
+	private void sacarBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		Ladrillo l1=new Ladrillo(8,17);
+		juego.getObstaculos().set(juego.getObstaculos().indexOf(mapa[8][17]),l1);
+		mapa[8][17]=l1;
+
+		juego.getGui().refreshGUI();
+		
+	}
+	
+	private Obstaculo buscarEnLista(int x,int y){
+		for(Obstaculo o :juego.getObstaculos()){
+			if(o.getX()==x && o.getY()==y){
+				System.out.println(" para que los putos pregunten");
+				return o;
+			}
+		}
+		
+		return null;
+	}
+
+	private void ponerBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		Cemento l1=new Cemento(8,17);
+		Obstaculo puto=buscarEnLista(8,17);
+		juego.getObstaculos().set(juego.getObstaculos().indexOf(puto),l1);
+		juego.getGui().actualizarListaObstaculos(juego.getObstaculos());
+		mapa[8][17]=l1;
+		juego.getGui().refreshGUI();
+
+
+	}
+	
+	public void efecto() {
+		juego.Pala();
+		
+	}
+	
+}

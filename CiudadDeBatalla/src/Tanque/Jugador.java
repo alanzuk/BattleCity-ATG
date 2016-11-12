@@ -1,6 +1,8 @@
 package Tanque;
+import java.awt.Image;
 import java.awt.Rectangle;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import General.GameObject;
@@ -11,8 +13,8 @@ import Visitor.VisitanteConcreto;
 
 public class Jugador extends Tanque {
 	private Nivel nivel;
-	private DisparoJugador disparo;
-
+	private Proyectil disparo;
+	
 	public Jugador(int x, int y){
 		this.x=x;
 		this.y=y;
@@ -20,26 +22,46 @@ public class Jugador extends Tanque {
 		destructible=true;
 		direccion=1;
 		nivel= new Nivel1();
-		//inicializo rectangulo para obstaculo
 		rectangulo=new Rectangle(x,y,tamanio_celda,tamanio_celda);
+		vida=3;
 		//Inicializo el JLabel
 		path=nivel.getRutaGrafica();
 		path_dinamico="1";
 		grafico=new JLabel();
 		refrescarPosicion();
-
 	}
 	
 	//Comandos
-	
+	public void setDestructible(boolean b){
+		destructible=b;
+	}
 	public Rectangle getRectangulo(){
 		return rectangulo = new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
 	}
 	
 	public int getVida(){
-		return nivel.getVida();
+		return vida;
 	}
-
+	
+	@Override
+	public void plomo(){
+		if(destructible){
+			if(vida>0){
+				vida--;		
+				path_dinamico=""+1;
+				direccion=1;
+				x=7;
+				y=17;
+				refrescarPosicion();
+			}
+			else{	
+				vida=0;
+			}
+		}
+	}
+	public void setNivel(){
+		nivel=new Nivel1();
+	}
 	public Proyectil disparar() {
 		float x_disp=x;
 		float y_disp=y;
@@ -66,8 +88,7 @@ public class Jugador extends Tanque {
 			}	
 		
 	if(nivel.getSimultaneo()>=0)
-		disparo=new DisparoJugador(direccion,x_disp,y_disp,(int)nivel.getVelocidadDisp(),this);
-		
+		disparo=nivel.getDisparoJugador(direccion,x_disp,y_disp,(int)nivel.getVelocidadDisp(),this);
 		return disparo;
 	}
 	
@@ -89,7 +110,6 @@ public class Jugador extends Tanque {
 	}
 	
 	public void mover(int i){
-		
 		if(direccion==i){
 			switch(i){
 				case 1:{
@@ -153,7 +173,7 @@ public class Jugador extends Tanque {
 	}
 
 	public Visitante getVisitante() {
-		return new VisitanteConcreto();
+		return nivel.getVisitante();
 	}
 	
 	public int getSimultaneo(){
@@ -163,4 +183,9 @@ public class Jugador extends Tanque {
 	public void setSimultaneo(){
 		nivel.setDisparo();
 	}
+
+	public void addVida() {
+		vida++;
+	}
+
 }

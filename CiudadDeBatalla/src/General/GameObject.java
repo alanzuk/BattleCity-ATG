@@ -1,14 +1,10 @@
 package General;
 
 import java.awt.*;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-
-import Aplicacion.GUI;
 import Visitor.Elemento;
 import Visitor.Visitante;
-
 
 public abstract class GameObject implements Elemento {
 	
@@ -33,7 +29,6 @@ public abstract class GameObject implements Elemento {
 	}
 	
 	public float getY(){
-		
 		return Math.round(y*100f)/100f;
 	}
 	
@@ -45,26 +40,27 @@ public abstract class GameObject implements Elemento {
 		this.y+=d;
 	}
 		
-	public int morir(){
-		path="Impacto";
+	public void morir(){
 		path_dinamico="";
-		avanzable=true;
 		path="";
+		avanzable=true;
+		destructible=false;
 		refrescarPosicion();
-		return 0;
 	}
 	
 	public void plomo(){
-		vida--;
-		path_dinamico=""+vida;
-		refrescarPosicion();
+		if(destructible){
+			vida--;		
+			path_dinamico=""+vida;
+			refrescarPosicion();
+		}
+		
 	}
 	
 	public int getVida(){
 		return vida;
 	}
 	
-	//Metodos Graficos
 	
 	public JLabel getGrafico(){
 		refrescarPosicion();
@@ -84,6 +80,10 @@ public abstract class GameObject implements Elemento {
 	public void setPath(String ruta){
 		path=ruta;
 	}
+	
+	public boolean getDestructible(){
+		return destructible;
+	}
 
 	public abstract boolean getAvanzable();
 
@@ -92,6 +92,5 @@ public abstract class GameObject implements Elemento {
 	public abstract Visitante getVisitante();
 	
 	public abstract boolean colision(GameObject obj1, GameObject obj2);
-		
 	
 }

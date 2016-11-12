@@ -1,12 +1,12 @@
 PPPPPPPPPPPPPPPPPPP
-Pe     e   e     eP
+P                 P
 P ll    l l    ll P
 P ll ll l l ll ll P
 P ll ll l l ll ll P
 P ll ll lcl ll ll P
 P ll ll l l ll ll P
 P ll ll     ll ll P
-P       l l       P
+P       lcl       P
 Pc   ll     ll   cP
 P       l l       P
 P ll ll lll ll ll P

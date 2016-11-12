@@ -1,0 +1,19 @@
+package Aplicacion;
+
+public class Reloj implements Runnable{
+		protected static int segundos=0;
+
+		
+		public void run() {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			segundos++;
+			
+		}
+		public static void reset(){segundos=0;}
+		public static int tiempo(){return segundos;}
+}

@@ -1,5 +1,6 @@
 package Visitor;
 
+import General.Logica;
 import Obstaculo.Agua;
 import Obstaculo.Aguila;
 import Obstaculo.Bosque;
@@ -15,6 +16,7 @@ import Poderes.Reloj;
 import Poderes.Vida;
 import Proyectil.DisparoEnemigo;
 import Proyectil.DisparoJugador;
+import Proyectil.DisparoJugadorMaximo;
 import Tanque.Enemigo;
 import Tanque.Jugador;
 
@@ -52,7 +54,6 @@ public class VisitanteConcreto implements Visitante {
 
 	@Override
 	public void visit(Enemigo e) {
-		//e.plomo();
 		e.marchaAtraz();
 	}
 
@@ -63,7 +64,7 @@ public class VisitanteConcreto implements Visitante {
 
 	@Override
 	public void visit(DisparoEnemigo d) {
-		
+		d.plomo();
 	}
 
 	@Override
@@ -73,36 +74,49 @@ public class VisitanteConcreto implements Visitante {
 
 	@Override
 	public void visit(Casco c) {
-		
+		c.morir();
+		c.efecto();
+	
 	}
 
 	@Override
 	public void visit(Estrella e) {
-		
+		e.efecto();
+		e.morir();
 	}
 
 	@Override
 	public void visit(Granada g) {
-		
+		g.efecto();
+		g.morir();
 	}
 
 	@Override
 	public void visit(Pala p) {
-		
+		p.efecto();
+		p.morir();
 	}
 
 	@Override
 	public void visit(Reloj r) {
-		
+		r.efecto();
+		r.morir();
 	}
 
 	@Override
 	public void visit(Vida v) {
-		
+		v.efecto();
+		v.morir();
 	}
 
 	@Override
 	public void visit(Limite limite) {
+		
+	}
+
+	@Override
+	public void visit(DisparoJugadorMaximo disparoJugadorMaximo) {
+		// TODO Auto-generated method stub
 		
 	}
 

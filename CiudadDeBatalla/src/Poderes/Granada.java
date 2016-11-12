@@ -4,16 +4,17 @@ import java.awt.Rectangle;
 
 import javax.swing.JLabel;
 
+import General.Logica;
 import Visitor.Visitante;
 import Visitor.VisitanteConcretoPoder;
 
 public class Granada extends Powerup {
 
-	public Granada(int x, int y) {
+	public Granada(int x, int y) {	
 		this.x=x;
 		this.y=y;
 		grafico= new JLabel();
-		path="granada";
+		path="PU_Granada";
 		path_dinamico="";
 		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
 	}
@@ -31,5 +32,8 @@ public class Granada extends Powerup {
 		
 		return new VisitanteConcretoPoder();
 	}
-	
+	public void efecto() {
+		juego.Granada();
+		
+	}
 }

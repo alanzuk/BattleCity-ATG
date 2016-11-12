@@ -15,6 +15,7 @@ import Poderes.Reloj;
 import Poderes.Vida;
 import Proyectil.DisparoEnemigo;
 import Proyectil.DisparoJugador;
+import Proyectil.DisparoJugadorMaximo;
 import Tanque.Enemigo;
 import Tanque.Jugador;
 
@@ -67,6 +68,7 @@ public class VisitanteConcretoObstaculo implements Visitante {
 	@Override
 	public void visit(DisparoJugador d) {
 		d.plomo();
+		d.morir();
 	}
 
 	@Override
@@ -101,6 +103,13 @@ public class VisitanteConcretoObstaculo implements Visitante {
 
 	@Override
 	public void visit(Limite limite) {
+		
+	}
+
+	@Override
+	public void visit(DisparoJugadorMaximo d) {
+		d.plomo();
+		d.morir();
 		
 	}
 

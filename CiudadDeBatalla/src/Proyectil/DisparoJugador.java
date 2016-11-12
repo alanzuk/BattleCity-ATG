@@ -69,13 +69,14 @@ public class DisparoJugador extends Proyectil {
 		      try {
 		        Clip clip = AudioSystem.getClip();
 		        File archivo=new File("src/Aplicacion/resources/Sonido/explosion.au");
-		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        
+		        clip.open(inputStream);
 		        clip.start(); 
 		      } catch (Exception e) {
 		        System.err.println(e.getMessage());
 		      }
 		    }
 		  }).start();
-		}
+	}
 	
 }

@@ -1,8 +1,9 @@
 package Obstaculo;
 
-
 import java.awt.Rectangle;
+
 import javax.swing.JLabel;
+
 import Visitor.Elemento;
 import Visitor.Visitante;
 
@@ -22,7 +23,7 @@ public class Ladrillo extends Obstaculo implements Elemento {
 		vida=4;
 	
 	}
-
+	@Override
 	public boolean getAvanzable(){
 		return avanzable;
 	}

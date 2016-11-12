@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 
 import Visitor.Visitante;
 import Visitor.VisitanteConcreto;
+import Visitor.VisitanteConcretoVacio;
 import General.GameObject;
 
 public class Vacio extends Obstaculo {
@@ -20,9 +21,9 @@ public class Vacio extends Obstaculo {
 		grafico=new JLabel();
 		refrescarPosicion();
 		rectangulo=new Rectangle(x,y,tamanio_celda,tamanio_celda);
-		visitante=new VisitanteConcreto();
+		visitante=new VisitanteConcretoVacio();
 	}
-	
+	@Override
 	public boolean getAvanzable(){
 		return avanzable;
 	}

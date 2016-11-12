@@ -1,0 +1,286 @@
+package Aplicacion;
+
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Color;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.util.LinkedList;
+import General.GameObject;
+import General.Logica;
+import Proyectil.Proyectil;
+import Tanque.Enemigo;
+import javax.swing.SwingConstants;
+import java.awt.Font;
+
+public class GUI implements KeyListener,Runnable  {
+	
+	private static Logica Juego;
+	private JFrame ventana;
+	protected static JPanel frame;
+	private static int tamanio_celda=32;
+	private static JLabel lblPuntos=new JLabel("Puntos : ");
+	private static JLabel lblVidas;
+	private static JLabel lblEnemigosRes;
+	
+	/**
+	 * Launch the application.
+	 */
+			public void run() {
+					GUI window = new GUI();
+					window.ventana.setVisible(true);			
+			}
+		
+	/**
+	 * Create the application.
+	 */
+	public GUI() {
+		Juego=new Logica();	
+		initialize();
+		refreshGUI();
+	}
+
+	
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	
+	private void initialize() {
+		
+		//Creacion del Frame
+		
+		ventana = new JFrame();
+		ventana.setForeground(Color.GRAY);
+		ventana.setBounds(100,100,700,700); //560,580
+		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		ventana.getContentPane().setLayout(null);	
+		ventana.getContentPane().setBackground(Color.DARK_GRAY);
+		//Registramos Oyente Teclas
+		ventana.addKeyListener(this);
+
+		frame = new JPanel();
+		frame.setLayout(null);	
+		frame.setBackground(Color.BLACK);
+		frame.setBounds(tamanio_celda,tamanio_celda, 19*tamanio_celda, 19*tamanio_celda);
+		ventana.getContentPane().add(frame,BorderLayout.CENTER);
+		lblPuntos.setHorizontalAlignment(SwingConstants.LEFT);
+		
+		
+		lblPuntos.setForeground(Color.WHITE);
+		lblPuntos.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		lblPuntos.setBounds(217, 11, 94, 14);
+		ventana.getContentPane().add(lblPuntos);
+	
+		
+		// Se agregan todos los labels inicializados 
+		crearMapa();
+		// Agregamos el Jugador
+		frame.add(Juego.getJugador().getGrafico());
+		
+		lblVidas = new JLabel("");
+		lblVidas.setForeground(Color.WHITE);
+		lblVidas.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		ventana.getContentPane().add(lblVidas);
+		lblVidas.setBounds(122, 11, 85, 14);
+		
+		lblEnemigosRes = new JLabel("ENEMIGOS RESTANTES :");
+		lblEnemigosRes.setFont(new Font("Trebuchet MS", Font.PLAIN, 12));
+		lblEnemigosRes.setForeground(Color.WHITE);
+		lblEnemigosRes.setBounds(341, 12, 161, 14);
+		ventana.getContentPane().add(lblEnemigosRes);
+		
+	}
+	
+	public static void actualizarListaEnemigos(LinkedList<Enemigo> lista){
+		for(Enemigo o : lista)
+			frame.add(o.getGrafico());
+	}	
+	
+	public static void refreshGUI(){	
+		frame.repaint();
+		lblPuntos.setText("PUNTOS :"+Juego.getPuntos());
+		lblVidas.setText("VIDAS :"+Juego.getJugador().getVida());
+		lblEnemigosRes.setText("ENEMIGOS RESTANTES :"+Juego.getEnemigosRestantes());
+	}
+	
+
+	public void crearMapa(){
+		GameObject[][] mapa=Juego.getMapa();
+		
+		for(int f=0;f<mapa.length;f++){
+			for(int c=0;c<mapa.length;c++){	
+				frame.add(mapa[f][c].getGrafico());
+			}
+		}
+		
+		for(Enemigo e :Juego.getEnemigos()){
+			frame.add(e.getGrafico());
+		}
+		
+		Thread t1= new Thread(Juego); 
+		t1.start();
+	}
+
+
+	public void keyPressed(KeyEvent e) {
+		
+		switch(e.getKeyCode()){
+		case (KeyEvent.VK_UP):{ 
+			playMover();
+			Juego.mover(1); 
+			break;
+			}
+		case (KeyEvent.VK_DOWN):{
+			playMover();
+			Juego.mover(2);
+			break;
+			}
+		case (KeyEvent.VK_RIGHT):{
+			playMover();
+			Juego.mover(3);
+			break;
+			}
+		case (KeyEvent.VK_LEFT):{
+			playMover();
+			Juego.mover(4);
+			break;
+			}
+		case(KeyEvent.VK_F):{
+			if(Juego.getSimultaneoJugador()>=0){
+				Proyectil p=Juego.getJugador().disparar();
+				agregarDisparo(p);
+				Juego.getProyectiles().addLast(p);
+				playDisparo();
+			}
+			break;
+		} 
+		case(KeyEvent.VK_T):{
+			Juego.terminar();
+			break;
+		} 
+		case(KeyEvent.VK_P):{
+			Juego.pausa();
+			break;
+		} 
+		case(KeyEvent.VK_1):{
+			frame.add(Juego.PonerCasco());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_2):{
+			frame.add(Juego.PonerEstrella());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_3):{
+			frame.add(Juego.PonerVida());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_4):{
+			frame.add(Juego.PonerReloj());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_5):{
+			frame.add(Juego.PonerPala());
+			frame.repaint();
+		}
+		case(KeyEvent.VK_6):{
+			frame.add(Juego.PonerGranada());
+			frame.repaint();
+		}
+		}
+		refreshGUI();
+	}
+
+	
+	public static void agregarDisparo(Proyectil p) {
+		frame.add(p.getGrafico());
+	}
+	
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+
+	
+	public static synchronized void playMotor() {
+		  new Thread(new Runnable() {
+		  // The wrapper thread is unnecessary, unless it blocks on the
+		  // Clip finishing; see comments.
+		    public void run() {
+		      try {
+		        Clip clip = AudioSystem.getClip();
+		        File archivo=new File("src/Aplicacion/resources/Sonido/tanque_quieto.au");
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
+		        clip.start(); 
+		      } catch (Exception e) {
+		        System.err.println(e.getMessage());
+		      }
+		    }
+		  }).start();
+	}
+	
+	public static synchronized void playIntro() {
+		  new Thread(new Runnable() {
+		  // The wrapper thread is unnecessary, unless it blocks on the
+		  // Clip finishing; see comments.
+		    public void run() {
+		      try {
+		        Clip clip = AudioSystem.getClip();
+		        File archivo=new File("src/Aplicacion/resources/Sonido/intro.au");
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
+		        clip.start(); 
+		      } catch (Exception e) {
+		        System.err.println(e.getMessage());
+		      }
+		    }
+		  }).start();
+	}
+	
+	public static synchronized void playDisparo() {
+		  new Thread(new Runnable() {
+		  // The wrapper thread is unnecessary, unless it blocks on the
+		  // Clip finishing; see comments.
+		    public void run() {
+		      try {
+		        Clip clip = AudioSystem.getClip();
+		        File archivo=new File("src/Aplicacion/resources/Sonido/disparo.au");
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
+		        clip.start(); 
+		      } catch (Exception e) {
+		        System.err.println(e.getMessage());
+		      }
+		    }
+		  }).start();
+	}
+	
+	public static synchronized void playMover() {
+		  new Thread(new Runnable() {
+		  // The wrapper thread is unnecessary, unless it blocks on the
+		  // Clip finishing; see comments.
+		    public void run() {
+		      try {
+		        Clip clip = AudioSystem.getClip();
+		        File archivo=new File("src/Aplicacion/resources/Sonido/mover.au");
+		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
+		        clip.start(); 
+		      } catch (Exception e) {
+		        System.err.println(e.getMessage());
+		      }
+		    }
+		  }).start();
+	}
+
+	public static void reloj() {
+		
+		
+	}
+}

@@ -1,0 +1,95 @@
+package Poderes;
+
+import java.awt.Rectangle;
+import java.util.LinkedList;
+
+import javax.swing.JLabel;
+
+import General.GameObject;
+import General.Logica;
+import Obstaculo.Cemento;
+import Obstaculo.Ladrillo;
+import Obstaculo.Obstaculo;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoPoder;
+
+public class Pala extends Powerup implements Runnable{
+
+	public Pala(int x, int y) {
+		this.x=x;
+		this.y=y;
+		grafico= new JLabel();
+		path="PU_PALA";
+		path_dinamico="";
+		rectangulo=new Rectangle((int)x,(int)y,tamanio_celda,tamanio_celda);
+	}
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+	public Rectangle getRectangulo() {
+	
+		return rectangulo;
+	}
+
+	@Override
+	public Visitante getVisitante() {
+		
+		return new VisitanteConcretoPoder();
+	}
+	
+	
+	
+	@Override
+	public void run() {
+		
+		double duracion=juego.getTiempo();
+		double efecto= (duracion+5);
+		juego.pausa();
+		ponerBarrera();
+		juego.getGui().refreshGUI();
+		juego.getGui().actualizarListaObstaculos(juego.getObstaculos());
+		juego.pausa();
+		while(duracion<efecto){
+			duracion+=0.05;
+			System.out.println("duracion : "+duracion+"efecto: "+efecto);
+			try {
+				Thread.sleep(70);
+			} catch (InterruptedException e) {}
+		}
+		juego.pausa();
+		sacarBarrera();
+		juego.getGui().refreshGUI();
+		juego.getGui().actualizarListaObstaculos(juego.getObstaculos());
+		juego.pausa();
+	}
+		
+
+			
+	private void sacarBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		LinkedList<Obstaculo> misObstaculos=juego.getObstaculos();
+		 mapa[8][17].setCemento();
+		 mapa[8][16].setCemento();
+		 mapa[9][16].setCemento();
+		 mapa[10][16].setCemento();
+		 mapa[10][17].setCemento();
+		
+	}
+	private void ponerBarrera() {
+		GameObject[][] mapa=juego.getMapa();
+		LinkedList<Obstaculo> misObstaculos=juego.getObstaculos();
+		 mapa[8][17].setCemento();
+		 mapa[8][16].setCemento();
+		 mapa[9][16].setCemento();
+		 mapa[10][16].setCemento();
+		 mapa[10][17].setCemento();
+
+	}
+	
+	public void efecto() {
+		juego.Pala();
+		
+	}
+	
+}

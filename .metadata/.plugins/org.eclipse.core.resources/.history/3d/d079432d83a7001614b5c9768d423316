@@ -1,0 +1,19 @@
+package Tanque;
+
+public class Nivel3 extends Nivel {
+
+	public Nivel3(){
+		 simultaneo=2;
+		 rutaGrafica="Jugador";
+		 velocidadMov=2;
+		 velocidadDisp=2;
+	}
+
+	public Nivel subirNivel() {
+		return new Nivel4();
+	}
+	
+	public Nivel bajarNivel(){
+		return new Nivel2();
+	}
+}

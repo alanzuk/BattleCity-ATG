@@ -15,6 +15,7 @@ import Poderes.Reloj;
 import Poderes.Vida;
 import Proyectil.DisparoEnemigo;
 import Proyectil.DisparoJugador;
+import Proyectil.DisparoJugadorMaximo;
 import Tanque.Enemigo;
 import Tanque.Jugador;
 
@@ -114,6 +115,12 @@ public class VisitanteConcretoVacio implements Visitante {
 
 	@Override
 	public void visit(Limite limite) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void visit(DisparoJugadorMaximo disparoJugadorMaximo) {
 		// TODO Auto-generated method stub
 		
 	}

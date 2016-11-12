@@ -9,7 +9,6 @@ public abstract class Tanque extends GameObject implements Movible {
 	protected String rutaGrafica;
 	protected float velocidadMov;
 	protected float velocidadDisp;
-	protected int aguante;
 	protected int direccion;
 	protected int simultaneo;
 
@@ -69,7 +68,6 @@ public abstract class Tanque extends GameObject implements Movible {
 	}
 	
 	public void setSimultaneo(){
-		System.out.println("Soy tanque aca estoy sumando");
 		simultaneo++;
 	}
 

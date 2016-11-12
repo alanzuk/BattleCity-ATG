@@ -1,44 +1,35 @@
 package Tanque;
 
-public class Nivel2 extends Nivel {
+import Proyectil.DisparoJugador;
+import Proyectil.Proyectil;
+import Visitor.Visitante;
+import Visitor.VisitanteConcretoProyectil;
 
+public class Nivel2 extends Nivel {
 	
 	public Nivel2(){
 		 simultaneo=1;
 		 rutaGrafica="Jugador";
-		 velocidadMov=4;
+		 velocidadMov=2;
 		 velocidadDisp=2;
-		 aguante=1;
 	}
 
-	@Override
-	public int getSimultaneo() {
-		return simultaneo;
-	}
-
-	@Override
-	public String getRutaGrafica() {
-		return rutaGrafica;
-	}
-
-	@Override
-	public float getVelocidadMov() {
-		return velocidadMov;
-	}
-
-	@Override
-	public float getVelocidadDisp() {
-		return velocidadDisp;
-	}
-
-	@Override
-	public int getVida() {
-		return aguante;
-	}
 	public Nivel subirNivel() {
 		return new Nivel3();
+	}public void disparar() {
+		this.simultaneo--;		
+	}
+	
+	public void setDisparo(){
+		this.simultaneo++;
 	}
 	public Nivel bajarNivel(){
 		return new Nivel2();
+	}
+	public Visitante getVisitante(){
+		return new VisitanteConcretoProyectil();
+	}
+	public  Proyectil  getDisparoJugador(int direccion, float x_disp,float y_disp, int velocidadDisp2, Jugador jugador) {
+		return new DisparoJugador(direccion,x_disp,y_disp,velocidadDisp2,jugador);
 	}
 }
