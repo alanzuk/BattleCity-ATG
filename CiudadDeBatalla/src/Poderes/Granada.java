@@ -33,7 +33,7 @@ public class Granada extends Powerup {
 		return new VisitanteConcretoPoder();
 	}
 	public void efecto() {
-		juego.Granada();
+		juego.Granada((int)x,(int)y);
 		
 	}
 }

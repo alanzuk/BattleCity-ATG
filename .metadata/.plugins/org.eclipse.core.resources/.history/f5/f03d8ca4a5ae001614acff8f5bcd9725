@@ -1,0 +1,37 @@
+package Aplicacion;
+
+import java.awt.EventQueue;
+
+import General.Logica;
+
+public class Launcher {
+	protected static Thread t1,t2;
+	protected Logica l;
+	protected GUI g;
+	public Launcher(){
+		l=new Logica();
+		g= new GUI(l);
+		l.setGui(g);
+		t1=new Thread(l);
+		t2=new Thread(g);
+		
+	}
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			
+			public void run() {
+				try {
+					t1.run();
+					t2.run();
+				}
+				catch(Exception e){}
+
+
+	}
+		});}
+	
+
+
+
+
+}

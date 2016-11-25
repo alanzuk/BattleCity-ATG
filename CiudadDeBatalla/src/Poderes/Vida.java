@@ -29,7 +29,7 @@ public class Vida extends Powerup{
 		return new VisitanteConcretoPoder();
 	}
 	public void efecto() {
-		juego.Vida();
+		juego.Vida((int)x,(int)y);
 	}
 	
 }

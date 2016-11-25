@@ -46,6 +46,7 @@ public class Casco extends Powerup implements Runnable {
 	}
 	
 	public void efecto() {
-		juego.Casco();
+		
+		juego.Casco((int)x,(int)y);
 	}
 }

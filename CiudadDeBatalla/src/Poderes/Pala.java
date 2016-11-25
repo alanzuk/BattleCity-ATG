@@ -142,7 +142,7 @@ public class Pala extends Powerup implements Runnable{
 	}
 	
 	public void efecto() {
-		juego.Pala();
+		juego.Pala((int)x,(int) y);
 		
 	}
 	

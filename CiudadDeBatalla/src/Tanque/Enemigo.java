@@ -18,6 +18,7 @@ public abstract class Enemigo extends Tanque {
 	public void movimientoFeroz(){
 		
 	}
+	
 	public int getVida(){
 		return this.vida;
 	}

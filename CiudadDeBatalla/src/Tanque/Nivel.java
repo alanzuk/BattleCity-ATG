@@ -28,7 +28,10 @@ public abstract class Nivel {
 	public float getVelocidadDisp(){
 		return velocidadDisp;
 	}
-
+	public Nivel bajarNivel(){
+		return new Nivel1();
+		
+	}
 	public abstract Nivel subirNivel();
 
 	public abstract Visitante getVisitante();

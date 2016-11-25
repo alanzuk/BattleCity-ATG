@@ -31,7 +31,7 @@ public class Estrella extends Powerup{
 		return new VisitanteConcretoPoder();
 	}
 	public void efecto() {
-		juego.Estrella();
+		juego.Estrella((int)x,(int) y);
 		
 	}
 }

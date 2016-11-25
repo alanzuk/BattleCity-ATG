@@ -1,11 +1,8 @@
 package Obstaculo;
 
 import java.awt.Rectangle;
-
 import javax.swing.JLabel;
-
 import Visitor.Visitante;
-import Visitor.VisitanteConcreto;
 import Visitor.VisitanteConcretoVacio;
 import General.GameObject;
 

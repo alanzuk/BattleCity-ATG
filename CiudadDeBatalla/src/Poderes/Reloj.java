@@ -31,7 +31,7 @@ public class Reloj extends Powerup implements Runnable{
 		return new VisitanteConcretoPoder();
 	}
 	public void efecto() {
-		juego.Reloj();
+		juego.Reloj((int)x,(int)y);
 		
 	}
 	@Override

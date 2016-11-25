@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -113,8 +115,7 @@ public class GUI implements KeyListener,Runnable  {
 		ventana.getContentPane().add(panelEnemigosRestantes);
 		
 		enemigosRestantes=new JLabel[16];
-		cant_enemigos=16;
-
+		cant_enemigos=Juego.getEnemigosRestantes();
 		lista_puntaje=new LinkedList<JLabel>();
 
 		inicializarLista(lista_puntaje);
@@ -237,8 +238,8 @@ public class GUI implements KeyListener,Runnable  {
 	    btnNuevaPartida.addActionListener(new ActionListener() { 
 	    	  public void actionPerformed(ActionEvent e) { 
 	    	    reiniciarJuego();
-	    		Launcher l= new Launcher();
-	    		Thread.interrupted();
+	    	    Juego.terminar();
+	    		Launcher nuevoJuego=new Launcher();
 	    	  } 
 	    	} );
 		
@@ -285,22 +286,22 @@ public class GUI implements KeyListener,Runnable  {
 		
 		switch(e.getKeyCode()){
 		case (KeyEvent.VK_UP):{ 
-			playMover();
+			playSound("mover");
 			Juego.mover(1); 
 			break;
 			}
 		case (KeyEvent.VK_DOWN):{
-			playMover();
+			playSound("mover");
 			Juego.mover(2);
 			break;
 			}
 		case (KeyEvent.VK_RIGHT):{
-			playMover();
+			playSound("mover");
 			Juego.mover(3);
 			break;
 			}
 		case (KeyEvent.VK_LEFT):{
-			playMover();
+			playSound("mover");
 			Juego.mover(4);
 			break;
 			}
@@ -309,7 +310,7 @@ public class GUI implements KeyListener,Runnable  {
 				Proyectil p=Juego.getJugador().disparar();
 				agregarDisparo(p);
 				Juego.getProyectiles().addLast(p);
-				playDisparo();
+				playSound("disparo");
 			}
 			break;
 		} 
@@ -318,7 +319,7 @@ public class GUI implements KeyListener,Runnable  {
 				Proyectil p=Juego.getJugador().disparar();
 				agregarDisparo(p);
 				Juego.getProyectiles().addLast(p);
-				playDisparo();
+				playSound("disparo");
 			}
 			break;
 		} 
@@ -330,36 +331,7 @@ public class GUI implements KeyListener,Runnable  {
 			Juego.pausa();
 			break;
 		} 
-		case(KeyEvent.VK_1):{
-			frame.add(Juego.PonerCasco());
-			frame.repaint();
-			break;
-		}
-		case(KeyEvent.VK_2):{
-			frame.add(Juego.PonerEstrella());
-			frame.repaint();
-			break;
-		}
-		case(KeyEvent.VK_3):{
-			frame.add(Juego.PonerVida());
-			frame.repaint();
-			break;
-		}
-		case(KeyEvent.VK_4):{
-			frame.add(Juego.PonerReloj());
-			frame.repaint();
-			break;
-		}
-		case(KeyEvent.VK_5):{
-			frame.add(Juego.PonerPala());
-			frame.repaint();
-			break;
-		}
-		case(KeyEvent.VK_6):{
-			frame.add(Juego.PonerGranada());
-			frame.repaint();
-			break;
-		}
+	
 		case(KeyEvent.VK_W):{
 			win();
 			break;
@@ -381,66 +353,17 @@ public class GUI implements KeyListener,Runnable  {
 	public void keyTyped(KeyEvent e) {
 		
 	}
+	
+	public void add(Component comp){
+		frame.add(comp);
+	}
 
-	public static synchronized void playMotor() {
+	public static synchronized void playSound(String ruta) {
 		  new Thread(new Runnable() {
-		  // The wrapper thread is unnecessary, unless it blocks on the
-		  // Clip finishing; see comments.
 		    public void run() {
 		      try {
 		        Clip clip = AudioSystem.getClip();
-		        File archivo=new File("src/Aplicacion/resources/Sonido/tanque_quieto.au");
-		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
-		        clip.start(); 
-		      } catch (Exception e) {
-		        System.err.println(e.getMessage());
-		      }
-		    }
-		  }).start();
-	}
-	
-	public static synchronized void playIntro() {
-		  new Thread(new Runnable() {
-		  // The wrapper thread is unnecessary, unless it blocks on the
-		  // Clip finishing; see comments.
-		    public void run() {
-		      try {
-		        Clip clip = AudioSystem.getClip();
-		        File archivo=new File("src/Aplicacion/resources/Sonido/intro.au");
-		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
-		        clip.start(); 
-		      } catch (Exception e) {
-		        System.err.println(e.getMessage());
-		      }
-		    }
-		  }).start();
-	}
-	
-	public static synchronized void playDisparo() {
-		  new Thread(new Runnable() {
-		  // The wrapper thread is unnecessary, unless it blocks on the
-		  // Clip finishing; see comments.
-		    public void run() {
-		      try {
-		        Clip clip = AudioSystem.getClip();
-		        File archivo=new File("src/Aplicacion/resources/Sonido/disparo.au");
-		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
-		        clip.start(); 
-		      } catch (Exception e) {
-		        System.err.println(e.getMessage());
-		      }
-		    }
-		  }).start();
-	}
-	
-	public static synchronized void playMover() {
-		  new Thread(new Runnable() {
-		  // The wrapper thread is unnecessary, unless it blocks on the
-		  // Clip finishing; see comments.
-		    public void run() {
-		      try {
-		        Clip clip = AudioSystem.getClip();
-		        File archivo=new File("src/Aplicacion/resources/Sonido/mover.au");
+		        File archivo=new File("src/Aplicacion/resources/Sonido/"+ruta+".au");
 		        AudioInputStream inputStream = AudioSystem.getAudioInputStream(archivo);		        clip.open(inputStream);
 		        clip.start(); 
 		      } catch (Exception e) {

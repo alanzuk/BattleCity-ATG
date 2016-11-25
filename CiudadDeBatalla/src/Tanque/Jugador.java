@@ -60,7 +60,7 @@ public class Jugador extends Tanque {
 		}
 	}
 	public void setNivel(){
-		nivel=new Nivel1();
+		nivel=nivel.bajarNivel();
 	}
 	public Proyectil disparar() {
 		float x_disp=x;

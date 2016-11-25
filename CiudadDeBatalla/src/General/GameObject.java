@@ -54,7 +54,6 @@ public abstract class GameObject implements Elemento {
 			path_dinamico=""+vida;
 			refrescarPosicion();
 		}
-		
 	}
 	
 	public int getVida(){

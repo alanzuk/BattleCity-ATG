@@ -20,7 +20,7 @@ public class Launcher {
 					Gui.run();
 					Thread t2=new Thread(Juego);
 					t2.start();
-					GUI.playIntro();
+					GUI.playSound("intro");
 				}
 				catch(Exception e){}
 

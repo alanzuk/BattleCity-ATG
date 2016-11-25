@@ -19,9 +19,8 @@ public class Nivel4 extends Nivel {
 	public Nivel subirNivel() {
 		return this;
 	}
-	public Nivel bajarNivel(){
-		return new Nivel3();
-	}public void disparar() {
+	
+	public void disparar() {
 		this.simultaneo--;		
 	}
 	

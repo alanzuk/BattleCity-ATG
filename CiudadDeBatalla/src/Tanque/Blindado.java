@@ -22,7 +22,7 @@ public class Blindado extends Enemigo{
 		refrescarPosicion();
 		recompensa=400;
 		rectangulo= new Rectangle(x,y,tamanio_celda,tamanio_celda);
-		vida=1;
+		vida=4;
 	}
 	
 	public boolean getAvanzable(){

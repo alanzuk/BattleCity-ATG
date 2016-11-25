@@ -24,9 +24,7 @@ public class Nivel3 extends Nivel {
 	public void setDisparo(){
 		this.simultaneo++;
 	}
-	public Nivel bajarNivel(){
-		return new Nivel2();
-	}
+	
 	public Visitante getVisitante(){
 		return new VisitanteConcretoProyectil();
 	}

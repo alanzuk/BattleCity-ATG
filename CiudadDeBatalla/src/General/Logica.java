@@ -6,7 +6,6 @@ import java.util.*;
 import Aplicacion.GUI;
 import Aplicacion.Temporizador;
 
-import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -40,6 +39,8 @@ public class Logica implements Runnable{
 	protected LinkedList<Proyectil> misProyectiles;
 	protected LinkedList<Proyectil> misProyectilesEnemigos;
 	
+	protected LinkedList<LinkedList<Integer>> posicionesPowerup; 
+	private int puntosParaSubir;
 	protected int iteracion=0;
 	protected volatile int oleada=1;
 	protected Jugador miJugador;
@@ -49,7 +50,7 @@ public class Logica implements Runnable{
 	protected volatile  boolean pausa=false;
 	protected volatile  boolean power=false;
 	protected Temporizador temporizador;
-	protected int enemigosRestantes;
+	protected volatile int enemigosRestantes;
 	protected GUI ventana;
 	
 	public Logica(){
@@ -58,6 +59,11 @@ public class Logica implements Runnable{
 		misObstaculos=new LinkedList<Obstaculo>();
 		misProyectiles = new LinkedList<Proyectil>();
 		misProyectilesEnemigos = new LinkedList<Proyectil>();
+		posicionesPowerup=new LinkedList<LinkedList<Integer>>();
+		//Inicializo las posiciones de los powerups
+		puntosParaSubir=0;
+		inicializarPosiciones();
+		
 		miJugador=new Jugador(7,17);
 		enemigosRestantes=16;
 		puntos=0;
@@ -292,18 +298,76 @@ public class Logica implements Runnable{
 	}
 	
 	public void eliminarEnemigo(Enemigo g){
+		
 		enemigosRestantes--;
-		puntos+=g.getRecompensa();
+
+		chequearPower();
+		chequearPuntos(g.getRecompensa());
 		g.morir();
-		if (puntos==1200)
-			miJugador.subirNivel();
-		if (puntos==2400)
-			miJugador.subirNivel();
-		if (puntos==3600) 
-			miJugador.subirNivel();
 		misEnemigos.remove(g);
 		g=null;
 		ventana.quitarEnemigoRestante();
+	}
+	
+	private void chequearPuntos(int p) {
+		puntos+=p;
+		puntosParaSubir+=p;
+		
+		if (puntosParaSubir%1200==0)
+			miJugador.subirNivel();
+	
+	}
+
+	private void chequearPower() {
+		
+		Random rnd=new Random();
+		
+		//Posicion aleatoria del powerup
+		LinkedList<Integer> pos=posicionesPowerup.get(rnd.nextInt(5));
+				
+		switch (enemigosRestantes){
+		
+			case(12):{PonerPower(rnd.nextInt(6),pos.getFirst(),pos.getLast());
+						break;
+			}
+			case(8):{PonerPower(rnd.nextInt(6),pos.getFirst(),pos.getLast());
+					break;
+			}
+			case(4):{PonerPower(rnd.nextInt(6),pos.getFirst(),pos.getLast());
+					break;
+			}
+
+		}
+		
+	}
+
+	private void inicializarPosiciones(){
+		
+		LinkedList<Integer> par1=new LinkedList<Integer>();
+		LinkedList<Integer> par2=new LinkedList<Integer>();
+		LinkedList<Integer> par3=new LinkedList<Integer>();
+		LinkedList<Integer> par4=new LinkedList<Integer>();
+		LinkedList<Integer> par5=new LinkedList<Integer>();
+
+		par1.add(7);
+		par1.add(12);
+		par2.add(1);
+		par2.add(12);
+		par3.add(17);
+		par3.add(4);
+		par4.add(14);
+		par4.add(5);
+		par5.add(1);
+		par5.add(8);
+
+		
+		posicionesPowerup.add(par1);
+		posicionesPowerup.add(par2);
+		posicionesPowerup.add(par3);
+		posicionesPowerup.add(par4);
+		posicionesPowerup.add(par5);
+
+		
 	}
 	
 	public void eliminarProyectil(Proyectil g){		
@@ -506,6 +570,7 @@ public class Logica implements Runnable{
     		ventana.gameOver();
     	}
 		miJugador.setNivel();
+		puntosParaSubir=0;
 		Powerup c=new Casco(7,12);
 		c.setLogica(this);
     	Thread y= new Thread((Runnable)c);
@@ -686,95 +751,89 @@ public class Logica implements Runnable{
 	/**
 	 * POWERUPS
 	 * Implementacion de los efectos y la aparicion.
+	 * @param y 
+	 * @param x 
 	 */
 	
-	
-	
-	//tecla 6
-	public  void Granada(){
-    	for(Enemigo e : misEnemigos){
-			puntos+=e.getRecompensa();
+	public  void Granada(int x, int y){
+		for(Enemigo e : misEnemigos){
+			 enemigosRestantes--;
+			ventana.quitarEnemigoRestante();
+			chequearPuntos(e.getRecompensa());
 			e.morir();
-			if(puntos==1200)miJugador.subirNivel();
-			if (puntos==2400) miJugador.subirNivel();
-			if (puntos==3600) miJugador.subirNivel();
-	}
-       enemigosRestantes-=misEnemigos.size();
-	   misEnemigos.removeAll(misEnemigos);
-	   mapa[7][12]=new Vacio(7,12);
+		}
+      
+	  misEnemigos.removeAll(misEnemigos);
+   	   mapa[x][y]=new Vacio(x,y);
     }
    
-	//Tecla 3
-    public void Vida() {
+    public void Vida(int x,int y) {
     	miJugador.addVida();
-		mapa[7][12]=new Vacio(7,12);
+    	mapa[x][y]=new Vacio(x,y);
 	}
-    //Tecla 2
-    public  void Estrella(){
+    public  void Estrella(int x, int y){
     	miJugador.subirNivel();
-		mapa[7][12]=new Vacio(7,12);
+    	mapa[x][y]=new Vacio(x,y);
 		
     }
-    public void Casco(){
-    	Thread y= new Thread((Casco)mapa[7][12]);
-    	y.start();
-    	mapa[7][12]=new Vacio(7,12);
+    public void Casco(int x, int y){
+    	Thread h= new Thread((Casco)mapa[x][y]);
+    	h.start();
+    	mapa[x][y]=new Vacio(x,y);
     
     }
-    //tecla 5
-    public void Pala(){
-    	Thread y= new Thread((Pala)mapa[7][12]);
-    	y.start();
-    	mapa[7][12]=new Vacio(7,12);
+    public void Pala(int x, int y){
+    	Thread h= new Thread((Pala)mapa[x][y]);
+    	h.start();
+    	mapa[x][y]=new Vacio(x,y);
     }
-    //Tecla 4
-    public void Reloj(){
-    	Thread y= new Thread((Reloj)mapa[7][12]);
+    public void Reloj(int x, int y){
+    	Thread h= new Thread((Reloj)mapa[x][y]);
     	power=true;
     	pausa();
-    	y.start();
-    	mapa[7][12]=new Vacio(7,12);
+    	h.start();
+    	mapa[x][y]=new Vacio(x,y);
     }
- // Tecla 3
- 	public Component PonerVida() {
- 		Powerup c=new Vida(7,12);
- 		c.setLogica(this);
- 		mapa[7][12]=c;
- 		return c.getGrafico();
- 	}
-	public Component PonerCasco() {
-		Powerup c=new Casco(7,12);
-		c.setLogica(this);
- 		mapa[7][12]=c;
-		return c.getGrafico();
-	}
-    //tecla 4
-	public Component PonerReloj() {
-		Powerup c=new Reloj(7,12);
-		c.setLogica(this);
- 		mapa[7][12]=c;
- 		return c.getGrafico();
-	}
+
 	
-	public Component PonerGranada() {
-		Powerup c=new Granada(7,12);
-		c.setLogica(this);
- 		mapa[7][12]=c;
- 		return c.getGrafico();
+	public void PonerPower(int nextInt,int x, int y) {
+		Powerup c=null;;
+		switch(nextInt){
+		case(0):{
+			c=new Pala(x,y);
+			mapa[x][y]=c;
+				break;
+		}
+		case(1):{
+			c=new Casco(x,y);
+			mapa[x][y]=c;
+			break;
 	}
-	
-	public Component PonerEstrella() {
-		Powerup c=new Estrella(7,12);
-		c.setLogica(this);
- 		mapa[7][12]=c;
- 		return c.getGrafico();
+		case(2):{
+			c=new Vida(x,y);
+			mapa[x][y]=c;
+			break;
 	}
-	
-	public Component PonerPala() {
-		Powerup c=new Pala(7,12);
+		case(3):{
+			c=new Granada(x,y);
+			mapa[x][y]=c;
+			break;
+	}
+		case(4):{
+			c=new Reloj(x,y);
+			mapa[x][y]=c;
+			break;
+	}
+		case(5):{
+			c=new Estrella(x,y);
+			mapa[x][y]=c;
+			break;
+	}
+		
+		}
+		ventana.add(c.getGrafico());
 		c.setLogica(this);
- 		mapa[7][12]=c;
- 		return c.getGrafico();
+ 		//return c.getGrafico();
 	}
 
 	public GUI getGui() {
