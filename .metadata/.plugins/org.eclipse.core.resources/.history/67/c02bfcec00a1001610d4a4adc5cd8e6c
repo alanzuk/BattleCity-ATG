@@ -1,0 +1,29 @@
+package Poderes;
+
+import java.awt.Rectangle;
+
+import javax.swing.JLabel;
+
+import Tanque.Tanque;
+import Visitor.Visitante;
+
+public class Casco extends Powerup {
+	public Casco(){}
+	
+	@Override
+	public Casco(int dir,float x, float y,Tanque t) {
+		this.x=x;
+		this.y=y;
+		direccion=dir;
+		tanque_origen=t;
+		grafico= new JLabel();
+		path="disparo";
+		path_dinamico="";
+		vida=1;
+		r=new Rectangle((int)x,(int)y,5,5);
+	}
+	public void afectar(Visitante v){
+		v.visit(this);
+		
+	}
+}

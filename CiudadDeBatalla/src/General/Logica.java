@@ -187,6 +187,7 @@ public class Logica implements Runnable{
 	
 	public  void terminar(){
 		seguir=false;
+		reiniciar();
 	}
 	
 	public void mover(int i) {
@@ -312,9 +313,9 @@ public class Logica implements Runnable{
 	private void chequearPuntos(int p) {
 		puntos+=p;
 		puntosParaSubir+=p;
-		
+		if(puntosParaSubir<=3600)
 		if (puntosParaSubir%1200==0)
-			miJugador.subirNivel();
+			  miJugador.subirNivel();
 	
 	}
 
@@ -856,7 +857,7 @@ public class Logica implements Runnable{
 		misProyectilesEnemigos.removeAll(misProyectilesEnemigos);
 		enemigosRestantes=16;
 		puntos=0;
-		Thread.interrupted();
+		mapa=null;
 	}
 
 

@@ -1,0 +1,11 @@
+package Poderes;
+import General.GameObject;
+
+public abstract class Powerup extends GameObject{
+	private GameObject ubicacion;
+	
+	
+	public GameObject getUbicacion(){
+		return ubicacion;
+	}
+}

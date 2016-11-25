@@ -6,7 +6,7 @@ import Visitor.Visitante;
 import Visitor.VisitanteConcretoProyectil;
 
 public abstract class Nivel {
-	protected int simultaneo;
+	protected volatile int simultaneo;
 	protected String rutaGrafica;
 	protected float velocidadMov;
 	protected float velocidadDisp;	
@@ -17,9 +17,7 @@ public abstract class Nivel {
 		return rutaGrafica;
 	}
 	
-	public int getSimultaneo(){
-		return simultaneo;
-	}
+	public abstract int getSimultaneo();
 
 	public float getVelocidadMov(){
 		return velocidadMov;

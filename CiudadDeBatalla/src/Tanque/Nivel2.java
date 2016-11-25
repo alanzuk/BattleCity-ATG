@@ -19,7 +19,9 @@ public class Nivel2 extends Nivel {
 	}public void disparar() {
 		this.simultaneo--;		
 	}
-	
+	public  int getSimultaneo(){
+		return simultaneo;
+	}
 	public void setDisparo(){
 		this.simultaneo++;
 	}

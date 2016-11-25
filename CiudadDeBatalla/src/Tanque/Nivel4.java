@@ -27,6 +27,9 @@ public class Nivel4 extends Nivel {
 	public void setDisparo(){
 		this.simultaneo++;
 	}
+	public  int getSimultaneo(){
+		return simultaneo;
+	}
 	public Visitante getVisitante(){
 		return new VisitanteConcretoProyectilMaximo();
 	}
